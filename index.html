@@ -289,6 +289,21 @@ code{font-size:12px;background:var(--soft-2);padding:1px 5px;border-radius:4px}
 .qr svg{width:100%;height:100%;display:block}
 textarea[readonly]{font-size:12px;word-break:break-all;color:var(--muted);background:var(--soft)}
 #sync-code,#cn-code{font-size:13px;word-break:break-all}
+.dev-list{margin:16px 0 4px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.dev-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:11px 16px;background:var(--soft);border-bottom:1px solid var(--line)}
+.dev-head h3{margin:0;font-size:13.5px}
+.dev-row{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 16px}
+.dev-row + .dev-row{border-top:1px solid var(--line)}
+.dev-ic{width:34px;height:34px;flex:none;border-radius:10px;background:var(--accent-soft);color:var(--accent-ink);display:grid;place-items:center}
+.dev-ic svg{width:18px;height:18px}
+.dev-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+input.dev-name{height:28px;padding:0 6px;margin-left:-6px;border-color:transparent;background:transparent;font-size:14px;font-weight:500;max-width:340px}
+input.dev-name:hover{border-color:var(--line-2)}
+input.dev-name:focus{background:var(--card)}
+.dev-meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:0 6px;align-items:center}
+.me-tag{font-weight:500;color:var(--accent-ink)}
+.live{color:var(--accent-ink);display:inline-flex;align-items:center;gap:5px}
+.live i{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 
 /* ============ Modal ============ */
 .overlay{position:fixed;inset:0;background:rgba(41,37,36,.26);display:grid;place-items:center;padding:16px;z-index:50;animation:fade .15s ease-out}
@@ -453,6 +468,8 @@ function defaultState(){
     deleted: {},      // 已刪除品項的墓碑 { id: 刪除時間 }，跨裝置同步用
     confAt: 0,        // 分類／順序／購物節／設定 最後修改時間
     sync: null,       // { gistId, token }，只存在本機加密資料中，不上傳
+    device: null,     // { id } 這台裝置自己的代號，只存在本機
+    devices: {},      // 同步中的裝置清單（會同步） { id: { name, nameAt, kind, joinedAt, lastSeen, revoked } }
     draft: null,
     ui: { tab:'list', calY:null, calM:null, lastCat:null },
   };
@@ -611,6 +628,8 @@ function migrate(d){
   s.ui = { ...base.ui, ...(d?.ui || {}) };
   for (const k of ['categories','priorities','festivals','items']) if (!Array.isArray(s[k])) s[k] = base[k];
   if (!s.deleted || typeof s.deleted !== 'object' || Array.isArray(s.deleted)) s.deleted = {};
+  if (!s.devices || typeof s.devices !== 'object' || Array.isArray(s.devices)) s.devices = {};
+  if (!s.device || typeof s.device !== 'object' || !s.device.id) s.device = null;
   s.confAt = Number(s.confAt) || 0;
   if (!s.categories.length) s.categories = base.categories;
   if (!s.priorities.length) s.priorities = base.priorities;
@@ -662,10 +681,54 @@ function resetTrack(){ sigItems = null; sigConf = null; track(); }
 function syncable(s){
   const del = {};
   Object.keys(s.deleted || {}).sort().forEach(k => del[k] = s.deleted[k]);
+  const devs = {};
+  Object.keys(s.devices || {}).sort().forEach(k => devs[k] = s.devices[k]);
   return { v:1, settings:s.settings, categories:s.categories, priorities:s.priorities, festivals:s.festivals,
-    confAt:s.confAt || 0, deleted:del,
+    confAt:s.confAt || 0, deleted:del, devices:devs,
     items:[...s.items].sort((a, b) => (a.createdAt - b.createdAt) || String(a.id).localeCompare(String(b.id))) };
 }
+
+/* --- 裝置清單：逐欄位合併；移除標記取最大值，所以不會被舊資料蓋掉 --- */
+function mergeDevices(a = {}, b = {}){
+  const out = {};
+  for (const id of new Set([...Object.keys(a), ...Object.keys(b)])) {
+    const x = a[id], y = b[id];
+    if (!x || !y) { out[id] = { ...(x || y) }; continue; }
+    const named = (y.nameAt || 0) > (x.nameAt || 0) ? y : x;
+    out[id] = { name:named.name, nameAt:named.nameAt || 0, kind:x.kind || y.kind,
+      joinedAt:Math.max(x.joinedAt || 0, y.joinedAt || 0), lastSeen:Math.max(x.lastSeen || 0, y.lastSeen || 0),
+      revoked:Math.max(x.revoked || 0, y.revoked || 0) };
+  }
+  return out;
+}
+const devActive = d => d && !((d.revoked || 0) > (d.joinedAt || 0));
+function devKind(){
+  const ua = navigator.userAgent;
+  if (/iPhone|iPod/.test(ua) || (/Android/.test(ua) && /Mobile/.test(ua))) return 'phone';
+  if (/iPad|Android/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return 'tablet';
+  return 'desktop';
+}
+function autoName(){
+  const ua = navigator.userAgent;
+  const os = /iPhone|iPod/.test(ua) ? 'iPhone'
+    : (/iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) ? 'iPad'
+    : /Android/.test(ua) ? (/Mobile/.test(ua) ? 'Android 手機' : 'Android 平板')
+    : /Windows/.test(ua) ? 'Windows 電腦' : /Macintosh/.test(ua) ? 'Mac' : /Linux/.test(ua) ? 'Linux 電腦' : '裝置';
+  const br = /Edg\//.test(ua) ? 'Edge' : /OPR\//.test(ua) ? 'Opera' : /Line\//.test(ua) ? 'LINE'
+    : /CriOS|Chrome\//.test(ua) ? 'Chrome' : /FxiOS|Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : '';
+  return br ? `${os} · ${br}` : os;
+}
+function myDevId(){ if (!S.device?.id) S.device = { id:uid() }; return S.device.id; }
+/* 登記／更新這台裝置；被移除時回傳 'revoked' */
+function touchMyDevice({ rejoin = false } = {}){
+  const id = myDevId(), t = now(), me = S.devices[id];
+  if (!me) { S.devices[id] = { name:autoName(), nameAt:0, kind:devKind(), joinedAt:t, lastSeen:t, revoked:0 }; return true; }
+  if (rejoin) { me.joinedAt = t; me.lastSeen = t; me.kind = devKind(); return true; }
+  if (!devActive(me)) return 'revoked';
+  if (t - (me.lastSeen || 0) > 5 * MIN) { me.lastSeen = t; return true; }
+  return false;
+}
+function markSync(){ editSeq++; syncPending = true; touch(); scheduleSync(1500); }
 function mergeInto(L, R, { conf = true } = {}){
   const before = JSON.stringify(syncable(L));
   const del = { ...(L.deleted || {}) };
@@ -676,6 +739,7 @@ function mergeInto(L, R, { conf = true } = {}){
   for (const it of R.items) { const cur = map.get(it.id); if (!cur || itemTs(it) > itemTs(cur)) map.set(it.id, it); }
   L.items = [...map.values()].filter(it => !(del[it.id] && del[it.id] >= itemTs(it)));
   L.deleted = del;
+  L.devices = mergeDevices(L.devices, R.devices);
   if (conf && (R.confAt || 0) > (L.confAt || 0)) { for (const k of CONF_KEYS) L[k] = R[k]; L.confAt = R.confAt; }
   return JSON.stringify(syncable(L)) !== before;
 }
@@ -717,7 +781,7 @@ function scheduleSync(ms = 2000){
   if (!S?.sync?.gistId || syncFatal) return;
   clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(), ms);
 }
-async function syncNow(){
+async function syncNow({ leaving = false } = {}){
   if (!S?.sync?.gistId || !KEY) return false;
   if (syncing) { syncAgain = true; return false; }
   syncing = true; clearTimeout(syncTimer); setSync('syncing');
@@ -738,12 +802,19 @@ async function syncNow(){
         changedLocal = mergeInto(S, R);
       }
     }
+    let devChanged = false;
+    if (!leaving) {
+      const st = touchMyDevice();
+      if (st === 'revoked') { resetTrack(); handleRevoked(); return false; }
+      devChanged = st === true;
+    }
     const payload = syncable(S), seq = editSeq;
     if (!R || JSON.stringify(payload) !== JSON.stringify(syncable(R))) {
       await gistPut(sync, vaultRecord(await seal(KEY, payload)));
       if (KEY !== sess) return false;
     }
     if (changedLocal) { resetTrack(); dirty = true; flush(); softRender(); }
+    else if (devChanged) { dirty = true; flush(); }
     syncPending = editSeq !== seq;
     lastSyncAt = now(); setSync('ok');
     return true;
@@ -754,6 +825,13 @@ async function syncNow(){
     syncing = false;
     if (syncAgain && KEY === sess) { syncAgain = false; scheduleSync(300); }
   }
+}
+function handleRevoked(){
+  S.sync = null; clearTimeout(syncTimer); syncPending = false;
+  dirty = true; flush(); setSync('off'); render();
+  dialog({ title:'這台裝置已移出同步',
+    body:'<p>你在其他裝置上把這台裝置從同步清單移除了。這台裝置上的資料仍然保留，但之後不會再同步。</p><p class="desc">如果要重新加入，到「設定 → 跨裝置同步」用同步碼連結即可。</p>',
+    ok:'知道了', cancel:'' });
 }
 function softRender(){
   const a = document.activeElement;
@@ -1748,7 +1826,7 @@ async function importJSON(file){
   const n = (data.items || []).length;
   const ok = await dialog({ title:'用備份取代目前資料？', body:`<p>備份內有 ${n} 個品項。目前的資料會被取代（主密碼維持不變）。</p>`, ok:'取代', danger:true });
   if (!ok) return;
-  const keep = { sync:S.sync, ui:S.ui }, t = now();
+  const keep = { sync:S.sync, ui:S.ui, device:S.device, devices:S.devices }, t = now();
   const imported = migrate(data);
   imported.deleted = { ...S.deleted, ...imported.deleted };
   imported.items.forEach(i => { i.updatedAt = t; delete imported.deleted[i.id]; });
@@ -1877,6 +1955,7 @@ function syncPanelHtml(){
   return `<section class="panel sync-panel" id="sync-panel">
     <div class="panel-head"><h2>跨裝置同步</h2><span class="pill ${syncPillCls()}" id="sync-status">${esc(syncStatusText())}</span></div>
     <p class="desc">已連結到你 GitHub 帳號的私人 Gist。每次修改約 2 秒後自動上傳；切回這個頁面時，會自動抓取其他裝置的最新修改。</p>
+    ${deviceListHtml()}
     <div class="row-actions">
       <button class="btn sm primary" data-act="sync-code">在新裝置登入（QR Code）</button>
       <button class="btn sm" data-act="sync-now">立即同步</button>
@@ -1898,6 +1977,7 @@ async function enableSync(el){
       return;
     }
     dirty = true; await flush();
+    touchMyDevice({ rejoin:true });
     const g = await gistCreate(token, vaultRecord(await seal(KEY, syncable(S))));
     S.sync = { gistId:g.id, token };
     touch(); lastSyncAt = now(); syncPending = false; setSync('ok'); render();
@@ -1996,9 +2076,10 @@ async function connectDo(el){
         have.add(keyOf(it)); added++;
       }
     }
-    R.ui = S.ui; R.draft = null; R.sync = r.sync;
+    R.ui = S.ui; R.draft = null; R.sync = r.sync; R.device = S.device;
     S = R; KEY = r.key; META = r.meta;
-    resetTrack(); syncPending = added > 0; syncFatal = false;
+    touchMyDevice({ rejoin:true });
+    resetTrack(); syncPending = true; syncFatal = false;
     $('#modal-root').innerHTML = ''; modalKind = null;
     dirty = true; await flush(); render();
     toast(added ? `已連結，並合併了這台裝置的 ${added} 個品項` : '已連結，資料已同步到這台裝置');
@@ -2011,7 +2092,58 @@ async function connectDo(el){
 async function syncOff(){
   const ok = await dialog({ title:'中斷這台裝置的同步？', body:'<p>之後這台裝置的修改不會上傳，也收不到其他裝置的更新。雲端資料和其他裝置不受影響，之後可以再用同步碼連結。</p>', ok:'中斷同步' });
   if (!ok) return;
+  const me = S.device?.id && S.devices[S.device.id];
+  if (me) { me.revoked = now(); syncPending = true; await syncNow({ leaving:true }); }   // 讓其他裝置的清單也移除這台
   S.sync = null; clearTimeout(syncTimer); touch(); setSync('off'); render(); toast('已中斷同步');
+}
+
+/* --- 裝置清單介面 --- */
+const DEV_ICON = {
+  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="7" y="3" width="10" height="18" rx="2.2"/><path d="M11 18h2"/></svg>',
+  tablet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="4.5" y="3" width="15" height="18" rx="2.2"/><path d="M11 18h2"/></svg>',
+  desktop:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="12" rx="1.8"/><path d="M9 20h6M12 16.5V20"/></svg>',
+};
+function ago(t){
+  const d = now() - t;
+  if (d < 2 * MIN) return '剛剛';
+  if (d < HOUR) return `${Math.floor(d / MIN)} 分鐘前`;
+  if (d < DAY) return `${Math.floor(d / HOUR)} 小時前`;
+  if (d < 30 * DAY) return `${Math.floor(d / DAY)} 天前`;
+  return fmtMD(t);
+}
+function deviceListHtml(){
+  const myId = S.device?.id;
+  const list = Object.entries(S.devices || {}).filter(([, d]) => devActive(d))
+    .sort(([a, x], [b, y]) => (b === myId) - (a === myId) || (y.lastSeen || 0) - (x.lastSeen || 0));
+  if (!list.length) return '';
+  const rows = list.map(([id, d]) => {
+    const me = id === myId;
+    const seen = me ? (lastSyncAt || d.lastSeen) : d.lastSeen;
+    const active = now() - (seen || 0) < 15 * MIN;
+    const status = me ? '<b class="me-tag">這台裝置</b>'
+      : active ? '<span class="live"><i></i>使用中</span>' : `最後同步 ${ago(seen || 0)}`;
+    return `<div class="dev-row">
+      <span class="dev-ic">${DEV_ICON[d.kind] || DEV_ICON.desktop}</span>
+      <div class="dev-main">
+        <input type="text" class="dev-name" maxlength="30" value="${esc(d.name || '未命名裝置')}" data-devname="${esc(id)}" aria-label="裝置名稱">
+        <span class="dev-meta">${status}<span>·</span><span>${fmtMD(d.joinedAt || 0)} 加入</span></span>
+      </div>
+      ${me ? '' : `<button class="btn sm ghost danger" data-act="dev-remove" data-id="${esc(id)}">移除</button>`}
+    </div>`;
+  }).join('');
+  return `<div class="dev-list">
+    <div class="dev-head"><h3>同步中的裝置（${list.length}）</h3><span class="desc">點名稱可以直接修改</span></div>
+    ${rows}
+  </div>`;
+}
+async function removeDevice(id){
+  const d = S.devices[id]; if (!d) return;
+  const ok = await dialog({ title:`移除「${d.name}」？`,
+    body:'<p>那台裝置下次開啟網站時會自動停止同步，它上面的資料會保留，但不會再收到更新。</p><p class="desc">如果是遺失或被別人拿走的裝置，移除之後，請再到「外觀與安全」變更主密碼，並到 GitHub 撤銷權杖，才能完全阻止存取。</p>',
+    ok:'移除', danger:true });
+  if (!ok) return;
+  d.revoked = now();
+  markSync(); render(); toast(`已移除「${d.name}」`);
 }
 async function reauth(){
   const r = await dialog({ title:'主密碼已在其他裝置變更', body:'<p>請輸入新的主密碼，這台裝置也會改用它。</p>', fields:[{ name:'pw', label:'新的主密碼', type:'password' }], ok:'繼續同步' });
@@ -2025,7 +2157,7 @@ async function reauth(){
     await flush();
     const R = migrate(data);
     mergeInto(R, S);
-    R.ui = S.ui; R.draft = S.draft; R.sync = S.sync;
+    R.ui = S.ui; R.draft = S.draft; R.sync = S.sync; R.device = S.device;
     S = R; KEY = key; META = { salt:remote.salt, iter:remote.iter, keyAt:remote.keyAt || 0 };
     resetTrack(); dirty = true; await flush();
     syncPending = true; syncState = 'off'; render();
@@ -2037,7 +2169,7 @@ function indClick(){
   if (!S.sync) { S.ui.tab = 'settings'; touch(); render(); window.scrollTo(0, 0); return; }
   if (syncState === 'rekey') { reauth(); return; }
   syncFatal = false;
-  syncNow().then(ok => toast(ok ? '已同步' : (syncMsg || '同步失敗')));
+  syncNow().then(ok => { if (S?.sync) toast(ok ? '已同步' : (syncMsg || '同步失敗')); });
 }
 
 /* =====================================================================
@@ -2084,6 +2216,7 @@ const A = {
   'sync-now': () => indClick(),
   'sync-reauth': () => reauth(),
   'sync-off': () => syncOff(),
+  'dev-remove': (el, id) => removeDevice(id),
   'lock-mode': async () => { const v = await readVault(); showLock(lockMode === 'connect' ? (v ? 'unlock' : 'setup') : 'connect'); },
 };
 const NEEDS_NO_SESSION = new Set(['reset-all','dlg-ok','dlg-cancel','modal-close','lock-mode']);
@@ -2134,6 +2267,10 @@ document.addEventListener('input', e => {
     if (f === 'name') { const v = el.value.trim(); if (!v) return; o.name = v; }
     else { const n = parseInt(el.value, 10); if (f === 'm' && n >= 1 && n <= 12) o.m = n; if (f === 'd' && n >= 1 && n <= 31) o.d = n; }
     touch();
+  } else if (ds.devname) {
+    const d = S.devices[ds.devname], v = el.value.trim();
+    if (!d || !v) return;
+    d.name = v.slice(0, 30); d.nameAt = now(); markSync();
   } else if (ds.filter) {
     F[ds.filter] = el.value; renderGrid();
   }
