@@ -114,6 +114,12 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mu
 .save-ind.saved i{animation:glow 1.2s ease-out 1}
 .save-ind.saving i{background:var(--faint);box-shadow:none;animation:pulse 1s infinite}
 .save-ind.error i{background:var(--danger);box-shadow:none}
+button.save-ind{border:none;background:none;cursor:pointer;padding:5px 9px;border-radius:999px;font-size:12px;color:var(--muted);margin-right:2px}
+button.save-ind:hover{background:var(--soft-2);color:var(--text)}
+.save-ind span{max-width:9em;overflow:hidden;text-overflow:ellipsis}
+.save-ind.local i{background:var(--faint);box-shadow:0 0 0 3px rgba(168,162,158,.18)}
+.save-ind.warn i{background:#F59E0B;box-shadow:0 0 0 3px rgba(245,158,11,.15)}
+.save-ind.error{color:var(--danger)}
 @keyframes pulse{50%{opacity:.35}}
 @keyframes glow{0%{box-shadow:0 0 0 0 var(--accent-line)}100%{box-shadow:0 0 0 3px var(--accent-soft)}}
 
@@ -264,6 +270,26 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mu
 .zone{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line-2)}
 .zone h3{color:var(--danger);font-size:13px}
 
+/* ============ Sync ============ */
+.sync-panel{grid-column:1/-1}
+.sync-panel > .desc{margin:0}
+.pill{font-size:12px;padding:2px 10px;border-radius:999px;background:var(--soft-2);color:var(--muted);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.pill.on{background:var(--accent-soft);color:var(--accent-ink)}
+.pill.warn{background:rgba(245,158,11,.12);color:#B45309}
+.pill.bad{background:rgba(168,86,76,.1);color:var(--danger)}
+.sync-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.sync-col{background:var(--soft);border-radius:10px;padding:14px 16px}
+.sync-col h3{font-size:14px;margin:0 0 6px}
+.steps{margin:4px 0 10px;padding-left:20px;font-size:13px;line-height:1.8}
+.steps a{font-weight:500}
+code{font-size:12px;background:var(--soft-2);padding:1px 5px;border-radius:4px}
+.qr-wrap{display:flex;gap:18px;align-items:center}
+.qr-wrap .steps{margin:0}
+.qr{width:184px;height:184px;flex:none;display:grid;place-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px;text-align:center}
+.qr svg{width:100%;height:100%;display:block}
+textarea[readonly]{font-size:12px;word-break:break-all;color:var(--muted);background:var(--soft)}
+#sync-code,#cn-code{font-size:13px;word-break:break-all}
+
 /* ============ Modal ============ */
 .overlay{position:fixed;inset:0;background:rgba(41,37,36,.26);display:grid;place-items:center;padding:16px;z-index:50;animation:fade .15s ease-out}
 @keyframes fade{from{opacity:0}}
@@ -308,7 +334,8 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mu
   .topbar-in{flex-wrap:wrap;padding:10px 16px 0;gap:8px 10px}
   .tabs{order:3;width:100%;margin:0 -4px;overflow-x:auto;padding-bottom:8px}
   .top-actions{margin-left:auto}
-  .save-ind span{display:none}
+  .save-ind span{max-width:6.5em}
+  .sync-cols{grid-template-columns:1fr}
   .main{padding:18px 16px 96px}
   .stats{grid-template-columns:repeat(2,1fr);gap:10px}
   .filters{width:100%}
@@ -333,6 +360,8 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mu
   .overlay{place-items:end center;padding:0}
   .modal,.modal.sm{max-width:none;border-radius:18px 18px 0 0;max-height:92vh}
   .pp-grid{grid-template-columns:repeat(2,1fr)}
+  .qr-wrap{flex-direction:column;align-items:stretch}
+  .qr{margin:0 auto}
   .btn.add-label span{display:none}
 }
 </style>
@@ -348,8 +377,9 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mu
     <div id="lock-fields" class="lock-fields"></div>
     <p class="err" id="lock-err"></p>
     <button class="btn primary block" id="lock-btn" type="submit">解鎖</button>
-    <p class="lock-foot">資料以主密碼加密（AES-256-GCM），<br>只保存在這台裝置的瀏覽器中。</p>
-    <button type="button" class="linkbtn" data-act="reset-all" id="reset-link">忘記主密碼？清除資料重新開始</button>
+    <p class="lock-foot">資料以主密碼加密（AES-256-GCM）。<br>開啟跨裝置同步後，雲端也只存放密文。</p>
+    <button type="button" class="linkbtn" data-act="lock-mode" id="mode-link"></button><br>
+    <button type="button" class="linkbtn" data-act="reset-all" id="reset-link">忘記主密碼？清除這台裝置的資料</button>
   </form>
 </section>
 
@@ -365,7 +395,7 @@ label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mu
         <button class="tab" data-act="tab" data-v="settings">設定</button>
       </nav>
       <div class="top-actions">
-        <span class="save-ind saved" id="save-ind"><i></i><span>已自動儲存</span></span>
+        <button type="button" class="save-ind local" id="save-ind" data-act="sync-ind"><i></i><span>只存在本機</span></button>
         <button class="btn primary add-label" data-act="add">＋<span> 新增慾望</span></button>
         <button class="icon-btn" data-act="lock" title="鎖定" aria-label="鎖定">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
@@ -420,6 +450,9 @@ function defaultState(){
       { id:'fxmas', name:'聖誕節',     m:12, d:25 },
     ],
     items: [],
+    deleted: {},      // 已刪除品項的墓碑 { id: 刪除時間 }，跨裝置同步用
+    confAt: 0,        // 分類／順序／購物節／設定 最後修改時間
+    sync: null,       // { gistId, token }，只存在本機加密資料中，不上傳
     draft: null,
     ui: { tab:'list', calY:null, calM:null, lastCat:null },
   };
@@ -480,6 +513,8 @@ function toast(msg){
 const te = new TextEncoder(), td = new TextDecoder();
 const b64 = buf => { const b = new Uint8Array(buf); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
 const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const b64url = buf => b64(buf).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64url = s => { s = String(s).replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return unb64(s); };
 
 async function deriveKey(pw, salt, iter){
   const base = await crypto.subtle.importKey('raw', te.encode(pw), 'PBKDF2', false, ['deriveKey']);
@@ -540,6 +575,7 @@ let KEY = null, META = null, S = null;
 let saveTimer = null, dirty = false, saving = Promise.resolve();
 
 function touch(){
+  if (track()) { editSeq++; syncPending = true; scheduleSync(); }
   dirty = true; setInd('saving');
   clearTimeout(saveTimer); saveTimer = setTimeout(flush, 500);
 }
@@ -551,7 +587,7 @@ function flush(){
   saving = saving.then(async () => {
     try {
       const sealed = await seal(key, snap);
-      await writeVault({ v:1, salt:meta.salt, iter:meta.iter, ...sealed });
+      await writeVault({ v:1, salt:meta.salt, iter:meta.iter, keyAt:meta.keyAt || 0, ...sealed });
       if (S === snap) {
         setInd('saved');
         const h = $('#draft-hint'); if (h) h.textContent = '● 草稿已自動儲存 ' + fmtDT(now()).split(' ')[1];
@@ -560,13 +596,13 @@ function flush(){
   });
   return saving;
 }
-function setInd(state){
-  const el = $('#save-ind'); if (!el) return;
-  el.className = 'save-ind ' + state;
-  el.querySelector('span').textContent = { saving:'儲存中…', saved:'已自動儲存', error:'儲存失敗' }[state];
-}
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
+function setInd(state){ localState = state; renderInd(); }
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') { flush(); if (syncPending) syncNow(); }
+  else if (S?.sync && !syncFatal) syncNow();
+});
 window.addEventListener('pagehide', () => flush());
+window.addEventListener('online', () => { if (S?.sync && !syncFatal) syncNow(); });
 
 function migrate(d){
   const base = defaultState();
@@ -574,6 +610,8 @@ function migrate(d){
   s.settings = { ...base.settings, ...(d?.settings || {}) };
   s.ui = { ...base.ui, ...(d?.ui || {}) };
   for (const k of ['categories','priorities','festivals','items']) if (!Array.isArray(s[k])) s[k] = base[k];
+  if (!s.deleted || typeof s.deleted !== 'object' || Array.isArray(s.deleted)) s.deleted = {};
+  s.confAt = Number(s.confAt) || 0;
   if (!s.categories.length) s.categories = base.categories;
   if (!s.priorities.length) s.priorities = base.priorities;
   s.items.forEach(i => {
@@ -584,24 +622,257 @@ function migrate(d){
 }
 
 /* =====================================================================
+ * 5b. 跨裝置同步：GitHub 私人 Gist 存放「同一份密文」
+ *     - 雲端只存 AES-GCM 密文，金鑰只在主密碼裡
+ *     - 品項逐筆合併（較新的 updatedAt 勝出），刪除用墓碑
+ *     - 分類／順序／購物節／設定 以較新的 confAt 為準
+ * ===================================================================== */
+const GH = 'https://api.github.com', FILE = 'dms-vault.json';
+const CONF_KEYS = ['settings','categories','priorities','festivals'];
+let localState = 'saved', syncState = 'off', syncMsg = '', syncFatal = false;
+let lastSyncAt = 0, syncing = false, syncAgain = false, syncTimer = null;
+let syncPending = false, editSeq = 0, pendingRender = false;
+let sigItems = null, sigConf = null;
+
+/* --- 變更追蹤：自動補 updatedAt / confAt / 刪除墓碑 --- */
+const confSig = () => JSON.stringify(CONF_KEYS.map(k => S[k]));
+const itemSig = it => { const { updatedAt, ...r } = it; return JSON.stringify(r); };
+const itemTs = it => it.updatedAt || it.createdAt || 0;
+function track(){
+  if (!S) return false;
+  const t = now(), c = confSig();
+  let changed = false;
+  if (sigConf !== null && c !== sigConf) { S.confAt = t; changed = true; }
+  sigConf = c;
+  const m = new Map();
+  for (const it of S.items) {
+    const s = itemSig(it);
+    if (sigItems) {
+      if (!sigItems.has(it.id)) changed = true;
+      else if (sigItems.get(it.id) !== s) { it.updatedAt = t; changed = true; }
+    }
+    m.set(it.id, s);
+  }
+  if (sigItems) for (const id of sigItems.keys()) if (!m.has(id)) { S.deleted[id] = t; changed = true; }
+  sigItems = m;
+  return changed;
+}
+function resetTrack(){ sigItems = null; sigConf = null; track(); }
+
+function syncable(s){
+  const del = {};
+  Object.keys(s.deleted || {}).sort().forEach(k => del[k] = s.deleted[k]);
+  return { v:1, settings:s.settings, categories:s.categories, priorities:s.priorities, festivals:s.festivals,
+    confAt:s.confAt || 0, deleted:del,
+    items:[...s.items].sort((a, b) => (a.createdAt - b.createdAt) || String(a.id).localeCompare(String(b.id))) };
+}
+function mergeInto(L, R, { conf = true } = {}){
+  const before = JSON.stringify(syncable(L));
+  const del = { ...(L.deleted || {}) };
+  for (const [k, v] of Object.entries(R.deleted || {})) del[k] = Math.max(del[k] || 0, v);
+  const cutoff = now() - 180 * DAY;
+  for (const k in del) if (del[k] < cutoff) delete del[k];
+  const map = new Map(L.items.map(i => [i.id, i]));
+  for (const it of R.items) { const cur = map.get(it.id); if (!cur || itemTs(it) > itemTs(cur)) map.set(it.id, it); }
+  L.items = [...map.values()].filter(it => !(del[it.id] && del[it.id] >= itemTs(it)));
+  L.deleted = del;
+  if (conf && (R.confAt || 0) > (L.confAt || 0)) { for (const k of CONF_KEYS) L[k] = R[k]; L.confAt = R.confAt; }
+  return JSON.stringify(syncable(L)) !== before;
+}
+
+/* --- GitHub API --- */
+function ghErr(msg, kind){ const e = new Error(msg); e.kind = kind; return e; }
+async function gh(method, path, token, body){
+  let r;
+  try {
+    r = await fetch(GH + path, { method, cache:'no-store',
+      headers:{ Accept:'application/vnd.github+json', Authorization:'Bearer ' + token, ...(body ? { 'Content-Type':'application/json' } : {}) },
+      body: body ? JSON.stringify(body) : undefined });
+  } catch {
+    throw ghErr(navigator.onLine === false ? '目前離線，恢復連線後會自動同步' : '暫時連不到 GitHub，稍後會自動重試', 'offline');
+  }
+  if (r.status === 401) throw ghErr('GitHub 權杖無效或已過期，請到「設定 → 跨裝置同步」重新設定', 'auth');
+  if (r.status === 404) throw ghErr('找不到雲端同步資料（Gist 可能被刪除，或權杖沒有 gist 權限）', 'notfound');
+  if (r.status === 403 || r.status === 429) throw ghErr('GitHub 暫時拒絕請求（權杖缺少 gist 權限，或請求太頻繁）', 'error');
+  if (!r.ok) throw ghErr(`GitHub 回應錯誤（${r.status}）`, 'error');
+  return r.status === 204 ? null : r.json();
+}
+async function gistGet(sync){
+  const g = await gh('GET', '/gists/' + encodeURIComponent(sync.gistId), sync.token);
+  const f = g?.files?.[FILE]; if (!f) return null;
+  let c = f.content;
+  if (f.truncated && f.raw_url) c = await (await fetch(f.raw_url, { cache:'no-store' })).text();
+  try { return JSON.parse(c); } catch { return null; }
+}
+const vaultRecord = sealed => ({ v:1, salt:META.salt, iter:META.iter, keyAt:META.keyAt || 0, ...sealed });
+const gistPut = (sync, rec) => gh('PATCH', '/gists/' + encodeURIComponent(sync.gistId), sync.token, { files:{ [FILE]:{ content:JSON.stringify(rec) } } });
+const gistCreate = (token, rec) => gh('POST', '/gists', token, { description:'慾望清單・冷靜期｜加密同步資料（請勿手動修改）', public:false, files:{ [FILE]:{ content:JSON.stringify(rec) } } });
+async function findGist(token){
+  const list = await gh('GET', '/gists?per_page=100', token);
+  return (list || []).find(g => g.files && g.files[FILE]) || null;
+}
+
+/* --- 同步主流程：拉取 → 解密 → 合併 → 有差異才上傳 --- */
+function scheduleSync(ms = 2000){
+  if (!S?.sync?.gistId || syncFatal) return;
+  clearTimeout(syncTimer); syncTimer = setTimeout(() => syncNow(), ms);
+}
+async function syncNow(){
+  if (!S?.sync?.gistId || !KEY) return false;
+  if (syncing) { syncAgain = true; return false; }
+  syncing = true; clearTimeout(syncTimer); setSync('syncing');
+  const sess = KEY, sync = { ...S.sync };
+  try {
+    const remote = await gistGet(sync);
+    if (KEY !== sess) return false;
+    let R = null, changedLocal = false;
+    if (remote && remote.ct) {
+      if (remote.salt !== META.salt) {
+        if ((remote.keyAt || 0) >= (META.keyAt || 0)) { setSync('rekey', '主密碼已在其他裝置變更，請輸入新的主密碼'); return false; }
+        /* 這台裝置剛變更主密碼 → 直接以本機為準覆寫 */
+      } else {
+        let data;
+        try { data = await unseal(KEY, remote); } catch { setSync('rekey', '無法解密雲端資料，請重新輸入主密碼'); return false; }
+        if (KEY !== sess) return false;
+        R = migrate(data);
+        changedLocal = mergeInto(S, R);
+      }
+    }
+    const payload = syncable(S), seq = editSeq;
+    if (!R || JSON.stringify(payload) !== JSON.stringify(syncable(R))) {
+      await gistPut(sync, vaultRecord(await seal(KEY, payload)));
+      if (KEY !== sess) return false;
+    }
+    if (changedLocal) { resetTrack(); dirty = true; flush(); softRender(); }
+    syncPending = editSeq !== seq;
+    lastSyncAt = now(); setSync('ok');
+    return true;
+  } catch (e) {
+    if (KEY === sess) { syncFatal = e.kind === 'auth' || e.kind === 'notfound'; setSync(e.kind === 'offline' ? 'offline' : 'error', e.message); }
+    return false;
+  } finally {
+    syncing = false;
+    if (syncAgain && KEY === sess) { syncAgain = false; scheduleSync(300); }
+  }
+}
+function softRender(){
+  const a = document.activeElement;
+  if (modalKind || (a && a.closest && a.closest('#view') && /INPUT|SELECT|TEXTAREA/.test(a.tagName))) { pendingRender = true; return; }
+  render();
+}
+
+/* --- 狀態指示 --- */
+function setSync(state, msg = ''){
+  syncState = state; syncMsg = msg;
+  if (state !== 'error') syncFatal = false;
+  renderInd();
+  const st = $('#sync-status'); if (st) { st.textContent = syncStatusText(); st.className = 'pill ' + syncPillCls(); }
+}
+function syncStatusText(){
+  if (!S?.sync) return '目前只存在這台裝置';
+  return { syncing:'同步中…', ok: lastSyncAt ? `已同步 · ${fmtDT(lastSyncAt).split(' ')[1]}` : '已同步',
+    offline:'離線中，恢復後自動同步', error:'同步失敗：' + syncMsg, rekey:'需要輸入新的主密碼', off:'準備同步…' }[syncState] || '已同步';
+}
+const syncPillCls = () => !S?.sync ? '' : (syncState === 'error' || syncState === 'rekey') ? 'bad' : syncState === 'offline' ? 'warn' : 'on';
+function renderInd(){
+  const el = $('#save-ind'); if (!el) return;
+  let cls = 'saved', text = '已自動儲存', title = '';
+  if (localState === 'saving' && !S?.sync) { cls = 'saving'; text = '儲存中…'; }
+  else if (localState === 'error') { cls = 'error'; text = '本機儲存失敗'; }
+  else if (!S?.sync) { cls = 'local'; text = '只存在本機'; title = '資料只存在這台裝置。點此開啟跨裝置同步'; }
+  else if (syncState === 'syncing' || (syncPending && syncState === 'ok') || localState === 'saving') { cls = 'saving'; text = '同步中…'; }
+  else if (syncState === 'ok') { cls = 'saved'; text = '已同步'; title = lastSyncAt ? '最後同步 ' + fmtDT(lastSyncAt) + '，點此立即同步' : ''; }
+  else if (syncState === 'offline') { cls = 'warn'; text = '離線・已存本機'; title = syncMsg; }
+  else if (syncState === 'rekey') { cls = 'error'; text = '請重新輸入主密碼'; title = syncMsg; }
+  else if (syncState === 'error') { cls = 'error'; text = '同步失敗'; title = syncMsg; }
+  else { cls = 'saving'; text = '準備同步…'; }
+  el.className = 'save-ind ' + cls;
+  el.querySelector('span').textContent = text;
+  el.title = title || text;
+}
+
+/* --- 同步碼：gistId + token，以主密碼金鑰加密 --- */
+async function makeCode(){
+  const sealed = await seal(KEY, { g:S.sync.gistId, t:S.sync.token });
+  return 'DMS1.' + b64url(te.encode(JSON.stringify({ s:META.salt, i:META.iter, iv:sealed.iv, ct:sealed.ct })));
+}
+function codeFromText(text){
+  const s = String(text || '').trim();
+  const m = s.match(/sync=([A-Za-z0-9._~-]+)/);
+  return m ? m[1] : s;
+}
+async function resolveCode(text, pw){
+  const code = codeFromText(text);
+  if (/^(ghp_|github_pat_|gho_|ghu_)/.test(code)) {
+    const g = await findGist(code);
+    if (!g) throw new Error('這個 GitHub 帳號還沒有同步資料，請先在第一台裝置開啟同步');
+    return { gistId:g.id, token:code };
+  }
+  if (!code.startsWith('DMS1.')) throw new Error('同步碼格式不正確，請複製完整內容');
+  let obj;
+  try { obj = JSON.parse(td.decode(unb64url(code.slice(5)))); } catch { throw new Error('同步碼格式不正確，請複製完整內容'); }
+  const key = await deriveKey(pw, unb64(obj.s), obj.i);
+  let info;
+  try { info = await unseal(key, obj); } catch { throw new Error('主密碼不正確，或同步碼已失效（主密碼變更後要重新產生）'); }
+  return { gistId:info.g, token:info.t, key, salt:obj.s };
+}
+async function fetchRemote(text, pw){
+  const r = await resolveCode(text, pw);
+  const sync = { gistId:r.gistId, token:r.token };
+  const remote = await gistGet(sync);
+  if (!remote || !remote.ct) throw new Error('雲端上找不到同步資料');
+  const key = (r.key && r.salt === remote.salt) ? r.key : await deriveKey(pw, unb64(remote.salt), remote.iter);
+  let data;
+  try { data = await unseal(key, remote); } catch { throw new Error('主密碼不正確（若最近變更過主密碼，請輸入新的）'); }
+  return { key, meta:{ salt:remote.salt, iter:remote.iter, keyAt:remote.keyAt || 0 }, data, sync };
+}
+
+/* 網址帶 #sync=… 時（手機掃 QR Code 開啟），先記住再清掉網址 */
+let pendingCode = null;
+function readHashCode(){
+  const m = location.hash.match(/sync=([A-Za-z0-9._~-]+)/);
+  if (!m) return false;
+  pendingCode = m[1];
+  try { history.replaceState(null, '', location.pathname + location.search); } catch {}
+  return true;
+}
+readHashCode();
+/* 網頁已開著、只換了 #sync=… 時（不會重新載入）也要接手 */
+window.addEventListener('hashchange', () => {
+  if (!readHashCode()) return;
+  if (S) { if (S.sync) { toast('這台裝置已經在同步中'); pendingCode = null; } else { openConnect({ code:pendingCode }); pendingCode = null; } }
+  else showLock();
+});
+
+/* =====================================================================
  * 6. 門禁：設定 / 解鎖 / 鎖定
  * ===================================================================== */
 let lockMode = 'unlock';
 
-async function showLock(){
+async function showLock(force){
   const v = await readVault();
-  const setupMode = !v;
-  lockMode = setupMode ? 'setup' : 'unlock';
-  $('#lock-fields').innerHTML = setupMode
-    ? `<p class="lock-note">第一次使用，請設定主密碼。<br>所有資料都會用它加密，<b>忘記將無法找回</b>。</p>
+  lockMode = force || (v ? 'unlock' : (pendingCode ? 'connect' : 'setup'));
+  const fields = $('#lock-fields'), modeLink = $('#mode-link');
+  if (lockMode === 'setup') {
+    fields.innerHTML = `<p class="lock-note">第一次使用，請設定主密碼。<br>所有資料都會用它加密，<b>忘記將無法找回</b>。</p>
        <input type="password" id="pw1" placeholder="設定主密碼（至少 4 個字元）" autocomplete="new-password">
-       <input type="password" id="pw2" placeholder="再輸入一次" autocomplete="new-password">`
-    : `<input type="password" id="pw1" placeholder="輸入主密碼" autocomplete="current-password">`;
-  $('#lock-btn').textContent = setupMode ? '建立並進入' : '解鎖';
-  $('#reset-link').hidden = setupMode;
+       <input type="password" id="pw2" placeholder="再輸入一次" autocomplete="new-password">`;
+    modeLink.textContent = '已在其他裝置使用？用同步碼登入';
+  } else if (lockMode === 'connect') {
+    fields.innerHTML = `<p class="lock-note">在已開啟同步的裝置上，到「設定 → 跨裝置同步」掃描 QR Code 或複製同步碼，再輸入<b>同一組主密碼</b>。${v ? '<br>這台裝置原本的資料會被雲端資料取代。' : ''}</p>
+       <textarea id="sync-code" rows="3" placeholder="貼上同步碼或登入連結">${esc(pendingCode || '')}</textarea>
+       <input type="password" id="pw1" placeholder="主密碼（與其他裝置相同）" autocomplete="current-password">`;
+    modeLink.textContent = v ? '返回解鎖' : '第一次使用？建立新的主密碼';
+  } else {
+    fields.innerHTML = `${pendingCode ? '<p class="lock-note">解鎖這台裝置後，會接著引導你連結同步。</p>' : ''}
+       <input type="password" id="pw1" placeholder="輸入主密碼" autocomplete="current-password">`;
+    modeLink.textContent = '改用同步碼登入';
+  }
+  $('#lock-btn').textContent = { setup:'建立並進入', connect:'連結並進入', unlock:'解鎖' }[lockMode];
+  $('#reset-link').hidden = lockMode !== 'unlock';
   $('#lock-err').textContent = (window.crypto && crypto.subtle) ? '' : '此環境不支援加密，請以 https 網址或最新版瀏覽器開啟。';
   $('#app').hidden = true; $('#lock').hidden = false;
-  setTimeout(() => $('#pw1')?.focus(), 60);
+  setTimeout(() => (lockMode === 'connect' && !pendingCode ? $('#sync-code') : $('#pw1'))?.focus(), 60);
 }
 
 $('#lock-form').addEventListener('submit', async e => {
@@ -615,16 +886,25 @@ $('#lock-form').addEventListener('submit', async e => {
       if (pw.length < 4) throw new Error('主密碼至少需要 4 個字元');
       if (pw !== $('#pw2').value) throw new Error('兩次輸入的密碼不一致');
       const salt = crypto.getRandomValues(new Uint8Array(16));
-      META = { salt:b64(salt), iter:PBKDF2_ITER };
+      META = { salt:b64(salt), iter:PBKDF2_ITER, keyAt:now() };
       KEY = await deriveKey(pw, salt, PBKDF2_ITER);
       S = defaultState();
+      dirty = true; await flush();
+    } else if (lockMode === 'connect') {
+      const code = $('#sync-code').value;
+      if (!code.trim()) throw new Error('請貼上同步碼或登入連結');
+      if (!pw) throw new Error('請輸入主密碼');
+      const r = await fetchRemote(code, pw);
+      KEY = r.key; META = r.meta;
+      S = migrate(r.data); S.sync = r.sync; S.draft = null;
+      pendingCode = null;
       dirty = true; await flush();
     } else {
       const v = await readVault();
       const key = await deriveKey(pw, unb64(v.salt), v.iter);
       let data;
-      try { data = await unseal(key, v); } catch { throw new Error('主密碼不正確'); }
-      KEY = key; META = { salt:v.salt, iter:v.iter }; S = migrate(data);
+      try { data = await unseal(key, v); } catch { throw new Error('主密碼不正確。若剛在其他裝置改過主密碼，請先輸入這台裝置原本的密碼，或改用同步碼登入。'); }
+      KEY = key; META = { salt:v.salt, iter:v.iter, keyAt:v.keyAt || 0 }; S = migrate(data);
     }
     enterApp();
   } catch (ex) {
@@ -639,13 +919,23 @@ function enterApp(){
   $('#lock').hidden = true; $('#app').hidden = false;
   $('#lock-fields').innerHTML = '';
   lastActive = now();
+  resetTrack(); syncPending = false; lastSyncAt = 0; syncFatal = false;
+  syncState = 'off';
   setInd('saved');
   render();
+  if (S.sync) syncNow();
   if (S.draft) { renderItemModal(); toast('已為你復原上次未儲存的編輯'); }
+  else if (pendingCode) {
+    if (S.sync) toast('這台裝置已經在同步中');
+    else openConnect({ code:pendingCode });
+    pendingCode = null;
+  }
 }
 
 async function lockApp(){
   await flush();
+  if (S?.sync && syncPending) await Promise.race([syncNow(), new Promise(r => setTimeout(r, 4000))]);
+  clearTimeout(syncTimer); syncState = 'off'; syncAgain = false;
   KEY = null; S = null; META = null;
   $('#modal-root').innerHTML = ''; modalKind = null; dialogResolve = null;
   $('#view').innerHTML = '';
@@ -659,12 +949,14 @@ setInterval(() => {
   if (!S) return;
   const m = Number(S.settings.autoLockMin) || 0;
   if (m > 0 && now() - lastActive > m * MIN) { lockApp(); return; }
+  if (S.sync && !syncFatal && syncState !== 'rekey' && document.visibilityState === 'visible' && now() - lastSyncAt > 55000) syncNow();
   tick();
 }, 30000);
 function tick(){
   if (modalKind) return;
   const a = document.activeElement;
   if (a && a.closest && a.closest('#view') && /INPUT|SELECT|TEXTAREA/.test(a.tagName)) return;
+  if (pendingRender) { render(); return; }
   if (S.ui.tab === 'list') renderList();
   else if (S.ui.tab === 'gantt') renderGanttDyn();
 }
@@ -729,6 +1021,7 @@ const view = $('#view');
 const F = { status:'active', cat:'all', tier:'all', q:'', sort:'unlock' };
 
 function render(){
+  pendingRender = false;
   document.documentElement.dataset.accent = S.settings.accent === 'slate' ? 'slate' : 'sage';
   document.querySelectorAll('#tabs .tab').forEach(b => b.classList.toggle('on', b.dataset.v === S.ui.tab));
   ({ list:renderList, calendar:renderCalendar, gantt:renderGantt, settings:renderSettings }[S.ui.tab] || renderList)();
@@ -1048,6 +1341,7 @@ function renderSettings(){
   const num = (k, label) => `<label class="f">${label}<input type="number" min="0" step="100" inputmode="numeric" data-bind="${k}" value="${esc(st[k])}"></label>`;
 
   view.innerHTML = `<div class="settings">
+    ${syncPanelHtml()}
     <section class="panel">
       <h2>分類管理</h2>
       <p class="desc">預設 20 種分類，可直接改名、新增或刪除。刪除時，該分類下的品項會移到「雜項支出」。</p>
@@ -1145,6 +1439,7 @@ function closeModal(){
   if (modalKind === 'item' && S?.draft) { S.draft = null; touch(); }
   $('#modal-root').innerHTML = ''; modalKind = null;
   if (dialogResolve) { const r = dialogResolve; dialogResolve = null; r(null); }
+  else if (pendingRender && S) render();
 }
 function dialog({ title, body = '', fields = [], ok = '確定', cancel = '取消', danger = false }){
   return new Promise(res => {
@@ -1436,7 +1731,7 @@ async function exportEnc(){
 async function exportPlain(){
   const ok = await dialog({ title:'匯出明文 JSON？', body:'<p>明文檔案沒有加密，任何拿到檔案的人都能看到內容。適合轉移到其他工具使用。</p>', ok:'匯出' });
   if (!ok) return;
-  const data = JSON.parse(JSON.stringify(S)); data.draft = null;
+  const data = JSON.parse(JSON.stringify(S)); data.draft = null; data.sync = null;
   download(`慾望清單-明文-${stamp()}.json`, { format:'dms-plain', exportedAt:new Date().toISOString(), data });
 }
 async function importJSON(file){
@@ -1453,7 +1748,13 @@ async function importJSON(file){
   const n = (data.items || []).length;
   const ok = await dialog({ title:'用備份取代目前資料？', body:`<p>備份內有 ${n} 個品項。目前的資料會被取代（主密碼維持不變）。</p>`, ok:'取代', danger:true });
   if (!ok) return;
-  S = migrate(data); S.draft = null; touch(); render(); toast(`已匯入 ${n} 個品項`);
+  const keep = { sync:S.sync, ui:S.ui }, t = now();
+  const imported = migrate(data);
+  imported.deleted = { ...S.deleted, ...imported.deleted };
+  imported.items.forEach(i => { i.updatedAt = t; delete imported.deleted[i.id]; });
+  imported.confAt = t;
+  S = Object.assign(imported, keep, { draft:null });
+  touch(); render(); toast(`已匯入 ${n} 個品項`);
 }
 
 function parseCSV(text){
@@ -1523,22 +1824,220 @@ async function changePw(){
   if (r.n1.length < 4) { toast('新主密碼至少 4 個字元'); return; }
   if (r.n1 !== r.n2) { toast('兩次輸入的新主密碼不一致'); return; }
   await flush();
+  if (S.sync) {
+    const ok = await syncNow();
+    if (!ok) { toast('請先完成同步再變更主密碼（' + (syncMsg || '同步失敗') + '）'); return; }
+  }
   const salt = crypto.getRandomValues(new Uint8Array(16));
   KEY = await deriveKey(r.n1, salt, PBKDF2_ITER);
-  META = { salt:b64(salt), iter:PBKDF2_ITER };
+  META = { salt:b64(salt), iter:PBKDF2_ITER, keyAt:now() };
   dirty = true; await flush();
-  toast('主密碼已變更');
+  if (S.sync) {
+    syncPending = true; await syncNow();
+    toast('主密碼已變更。其他裝置下次同步時會要求輸入新密碼');
+  } else toast('主密碼已變更');
 }
 async function resetAll(){
-  const ok = await dialog({ title:'清除全部資料？', body:'<p>會刪除這個瀏覽器中的所有慾望紀錄與主密碼設定，<b>無法復原</b>。建議先匯出備份。</p>', ok:'繼續', danger:true });
+  const ok = await dialog({ title:'清除這台裝置的資料？', body:'<p>會刪除這個瀏覽器中的所有慾望紀錄與主密碼設定，<b>無法復原</b>。<br>雲端同步資料不會被刪除，之後仍可用同步碼登入取回。</p>', ok:'繼續', danger:true });
   if (!ok) return;
   const r = await dialog({ title:'最後確認', body:'<p>請輸入「清除」兩個字。</p>', fields:[{ name:'c', label:'確認文字' }], ok:'確認清除', danger:true });
   if (!r || r.c.trim() !== '清除') { toast('已取消'); return; }
-  clearTimeout(saveTimer); dirty = false; await saving;
+  clearTimeout(saveTimer); clearTimeout(syncTimer); dirty = false; await saving;
+  syncState = 'off'; syncPending = false;
   try { await IDB.del('vault'); } catch {}
   LS.del('dms.vault');
   KEY = null; S = null; META = null; $('#view').innerHTML = '';
   await showLock(); toast('已清除，請重新設定主密碼');
+}
+
+/* =====================================================================
+ * 9b. 同步設定介面
+ * ===================================================================== */
+const TOKEN_URL = 'https://github.com/settings/tokens/new?scopes=gist&description=' + encodeURIComponent('慾望清單同步');
+function syncPanelHtml(){
+  if (!S.sync) return `<section class="panel sync-panel" id="sync-panel">
+    <div class="panel-head"><h2>跨裝置同步</h2><span class="pill" id="sync-status">${syncStatusText()}</span></div>
+    <p class="desc">開啟後，資料會先用主密碼加密，再存到你自己 GitHub 帳號的私人 Gist。電腦和手機用同一組主密碼，就會看到同一份清單，GitHub 只看得到密文。</p>
+    <div class="sync-cols">
+      <div class="sync-col">
+        <h3>這台是第一台裝置（資料在這裡）</h3>
+        <ol class="steps">
+          <li><a href="${TOKEN_URL}" target="_blank" rel="noopener noreferrer">建立 GitHub 權杖 ↗</a>：只勾 <b>gist</b>，Expiration 建議選 No expiration，按 Generate token。</li>
+          <li>把 <code>ghp_</code> 開頭的權杖貼到下面：</li>
+        </ol>
+        <div class="add-row"><input type="password" id="gh-token" placeholder="ghp_…" autocomplete="off" spellcheck="false"><button class="btn sm primary" data-act="sync-enable">開始同步</button></div>
+      </div>
+      <div class="sync-col">
+        <h3>其他裝置已經開啟同步</h3>
+        <p class="desc">用那台裝置上的 QR Code 或同步碼連結。這台裝置現有的品項可以一起合併。</p>
+        <div class="row-actions"><button class="btn sm" data-act="sync-connect">用同步碼連結</button></div>
+      </div>
+    </div>
+  </section>`;
+  return `<section class="panel sync-panel" id="sync-panel">
+    <div class="panel-head"><h2>跨裝置同步</h2><span class="pill ${syncPillCls()}" id="sync-status">${esc(syncStatusText())}</span></div>
+    <p class="desc">已連結到你 GitHub 帳號的私人 Gist。每次修改約 2 秒後自動上傳；切回這個頁面時，會自動抓取其他裝置的最新修改。</p>
+    <div class="row-actions">
+      <button class="btn sm primary" data-act="sync-code">在新裝置登入（QR Code）</button>
+      <button class="btn sm" data-act="sync-now">立即同步</button>
+      ${syncState === 'rekey' ? '<button class="btn sm" data-act="sync-reauth">輸入新的主密碼</button>' : ''}
+      <button class="btn sm ghost danger" data-act="sync-off">中斷這台裝置的同步</button>
+    </div>
+  </section>`;
+}
+
+async function enableSync(el){
+  const token = ($('#gh-token')?.value || '').trim();
+  if (!token) { toast('請先貼上 GitHub 權杖'); $('#gh-token')?.focus(); return; }
+  el.disabled = true; el.textContent = '連線中…';
+  try {
+    const ex = await findGist(token);
+    if (ex) {
+      const ok = await dialog({ title:'這個 GitHub 帳號已有同步資料', body:'<p>看起來你已經在其他裝置開啟過同步。要改為連結那份資料嗎？（需要那台裝置的主密碼）</p>', ok:'連結既有資料' });
+      if (ok) openConnect({ code:token });
+      return;
+    }
+    dirty = true; await flush();
+    const g = await gistCreate(token, vaultRecord(await seal(KEY, syncable(S))));
+    S.sync = { gistId:g.id, token };
+    touch(); lastSyncAt = now(); syncPending = false; setSync('ok'); render();
+    showSyncCode(true);
+  } catch (e) {
+    toast(e.message);
+  } finally {
+    if (el.isConnected) { el.disabled = false; el.textContent = '開始同步'; }
+  }
+}
+
+let qrLib = null;
+function loadQR(){
+  if (window.qrcode) return Promise.resolve(window.qrcode);
+  return qrLib ??= new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+    s.onload = () => window.qrcode ? res(window.qrcode) : rej();
+    s.onerror = () => { qrLib = null; s.remove(); rej(); };
+    document.head.appendChild(s);
+  });
+}
+async function drawQR(box, text){
+  try {
+    const q = await loadQR(); const qr = q(0, 'M'); qr.addData(text); qr.make();
+    if (box.isConnected) box.innerHTML = qr.createSvgTag({ cellSize:4, margin:2, scalable:true });
+  } catch {
+    if (box.isConnected) box.innerHTML = '<span class="desc">QR Code 載入失敗。請按「複製登入連結」，傳到手機（例如用 LINE 傳給自己）後開啟。</span>';
+  }
+}
+async function showSyncCode(first){
+  const code = await makeCode();
+  const url = /^https?:$/.test(location.protocol) ? `${location.origin}${location.pathname}#sync=${code}` : '';
+  openModal(`<div class="modal" role="dialog" aria-modal="true">
+    <header><h2>${first ? '同步已開啟' : '在新裝置登入'}</h2><button class="icon-btn" data-act="modal-close" aria-label="關閉">${ICON.close}</button></header>
+    <div class="modal-body">
+      ${first ? '<p>這台裝置的資料已經加密上傳。接著用手機登入：</p>' : ''}
+      <div class="qr-wrap">
+        ${url ? `<div class="qr" id="qr-box"><span class="desc">產生中…</span></div>` : ''}
+        <ol class="steps">
+          ${url ? '<li>用手機相機掃描 QR Code，開啟網頁</li>' : '<li>在新裝置開啟網站，鎖定畫面選「用同步碼登入」，貼上下方同步碼</li>'}
+          <li>輸入<b>這台裝置的主密碼</b>，按「連結並進入」</li>
+          <li>之後兩邊會自動同步</li>
+        </ol>
+      </div>
+      <label class="f">${url ? '登入連結（也可以複製後傳到手機開啟）' : '同步碼'}<textarea readonly rows="3" id="code-text">${esc(url || code)}</textarea></label>
+      <p class="desc">連結裡的同步碼有加密，沒有主密碼無法使用；變更主密碼後，舊的連結會失效。</p>
+    </div>
+    <footer><span class="hint"></span><button class="btn" data-act="copy-code">複製${url ? '登入連結' : '同步碼'}</button><button class="btn primary" data-act="modal-close">完成</button></footer>
+  </div>`, 'code');
+  if (url) drawQR($('#qr-box'), url);
+}
+async function copyCode(){
+  const ta = $('#code-text'); if (!ta) return;
+  try { await navigator.clipboard.writeText(ta.value); }
+  catch { ta.select(); try { document.execCommand('copy'); } catch {} }
+  toast('已複製');
+}
+
+function openConnect(pre = {}){
+  const n = S.items.length;
+  openModal(`<div class="modal sm" role="dialog" aria-modal="true">
+    <header><h2>連結既有同步</h2><button class="icon-btn" data-act="modal-close" aria-label="關閉">${ICON.close}</button></header>
+    <form class="modal-body" id="connect-form">
+      <label class="f">同步碼或登入連結<textarea id="cn-code" rows="3" placeholder="在第一台裝置的「設定 → 跨裝置同步 → 在新裝置登入」取得">${esc(pre.code || '')}</textarea></label>
+      <label class="f">主密碼（第一台裝置的主密碼）<input type="password" id="cn-pw" autocomplete="current-password"></label>
+      ${n ? `<label class="check"><input type="checkbox" id="cn-merge" checked><span>把這台裝置上的 ${n} 個品項合併進去（名稱和金額都相同的會自動略過）</span></label>` : ''}
+      <p class="desc">連結後，這台裝置改用第一台裝置的主密碼，分類與設定以雲端為準。</p>
+      <p class="err" id="cn-err" style="margin:0"></p>
+    </form>
+    <footer><span class="hint"></span><button class="btn ghost" type="button" data-act="modal-close">取消</button><button class="btn primary" type="button" data-act="sync-connect-do">連結</button></footer>
+  </div>`, 'connect');
+  (pre.code ? $('#cn-pw') : $('#cn-code'))?.focus();
+}
+async function connectDo(el){
+  const code = $('#cn-code').value, pw = $('#cn-pw').value, merge = !!$('#cn-merge')?.checked, err = $('#cn-err');
+  err.textContent = '';
+  if (!code.trim()) { err.textContent = '請貼上同步碼或登入連結'; return; }
+  if (!pw) { err.textContent = '請輸入主密碼'; return; }
+  el.disabled = true; el.textContent = '連結中…';
+  try {
+    await flush();
+    const r = await fetchRemote(code, pw);
+    const R = migrate(r.data);
+    let added = 0;
+    if (merge) {
+      const keyOf = i => `${String(i.name).trim()}|${Math.round(i.amount)}`;
+      const have = new Set(R.items.map(keyOf)), ids = new Set(R.items.map(i => i.id)), t = now();
+      for (const it of S.items) {
+        if (ids.has(it.id) || have.has(keyOf(it))) continue;
+        const cn = catName(it.categoryId), pn = prioName(it.priorityId);
+        let c = R.categories.find(x => x.name === cn);
+        if (!c) { c = { id:uid(), name:cn }; R.categories.push(c); R.confAt = t; }
+        const p = R.priorities.find(x => x.name === pn) || R.priorities[Math.floor((R.priorities.length - 1) / 2)];
+        R.items.push({ ...it, categoryId:c.id, priorityId:p.id, festival:R.festivals.some(f => f.id === it.festival) ? it.festival : '', updatedAt:t });
+        have.add(keyOf(it)); added++;
+      }
+    }
+    R.ui = S.ui; R.draft = null; R.sync = r.sync;
+    S = R; KEY = r.key; META = r.meta;
+    resetTrack(); syncPending = added > 0; syncFatal = false;
+    $('#modal-root').innerHTML = ''; modalKind = null;
+    dirty = true; await flush(); render();
+    toast(added ? `已連結，並合併了這台裝置的 ${added} 個品項` : '已連結，資料已同步到這台裝置');
+    syncNow();
+  } catch (e) {
+    err.textContent = e.message;
+    if (el.isConnected) { el.disabled = false; el.textContent = '連結'; }
+  }
+}
+async function syncOff(){
+  const ok = await dialog({ title:'中斷這台裝置的同步？', body:'<p>之後這台裝置的修改不會上傳，也收不到其他裝置的更新。雲端資料和其他裝置不受影響，之後可以再用同步碼連結。</p>', ok:'中斷同步' });
+  if (!ok) return;
+  S.sync = null; clearTimeout(syncTimer); touch(); setSync('off'); render(); toast('已中斷同步');
+}
+async function reauth(){
+  const r = await dialog({ title:'主密碼已在其他裝置變更', body:'<p>請輸入新的主密碼，這台裝置也會改用它。</p>', fields:[{ name:'pw', label:'新的主密碼', type:'password' }], ok:'繼續同步' });
+  if (!r) return;
+  try {
+    const remote = await gistGet(S.sync);
+    if (!remote || !remote.ct) throw new Error('雲端上找不到同步資料');
+    const key = await deriveKey(r.pw, unb64(remote.salt), remote.iter);
+    let data;
+    try { data = await unseal(key, remote); } catch { throw new Error('主密碼不正確'); }
+    await flush();
+    const R = migrate(data);
+    mergeInto(R, S);
+    R.ui = S.ui; R.draft = S.draft; R.sync = S.sync;
+    S = R; KEY = key; META = { salt:remote.salt, iter:remote.iter, keyAt:remote.keyAt || 0 };
+    resetTrack(); dirty = true; await flush();
+    syncPending = true; syncState = 'off'; render();
+    await syncNow();
+    toast('已改用新的主密碼並完成同步');
+  } catch (e) { toast(e.message); }
+}
+function indClick(){
+  if (!S.sync) { S.ui.tab = 'settings'; touch(); render(); window.scrollTo(0, 0); return; }
+  if (syncState === 'rekey') { reauth(); return; }
+  syncFatal = false;
+  syncNow().then(ok => toast(ok ? '已同步' : (syncMsg || '同步失敗')));
 }
 
 /* =====================================================================
@@ -1576,8 +2075,18 @@ const A = {
   'import-json': () => $('#file-json').click(), 'import-csv': () => $('#file-csv').click(),
   'wipe-items': () => wipeItems(), 'reset-all': () => resetAll(), 'change-pw': () => changePw(),
   'dlg-ok': () => dlgOk(), 'dlg-cancel': () => closeModal(),
+  'sync-ind': () => indClick(),
+  'sync-enable': el => enableSync(el),
+  'sync-connect': () => openConnect({}),
+  'sync-connect-do': el => connectDo(el),
+  'sync-code': () => showSyncCode(false),
+  'copy-code': () => copyCode(),
+  'sync-now': () => indClick(),
+  'sync-reauth': () => reauth(),
+  'sync-off': () => syncOff(),
+  'lock-mode': async () => { const v = await readVault(); showLock(lockMode === 'connect' ? (v ? 'unlock' : 'setup') : 'connect'); },
 };
-const NEEDS_NO_SESSION = new Set(['reset-all','dlg-ok','dlg-cancel','modal-close']);
+const NEEDS_NO_SESSION = new Set(['reset-all','dlg-ok','dlg-cancel','modal-close','lock-mode']);
 
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]'); if (!el || el.disabled) return;
@@ -1597,6 +2106,7 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('submit', e => {
   if (e.target.id === 'dlg-form') { e.preventDefault(); dlgOk(); }
+  if (e.target.id === 'connect-form') { e.preventDefault(); const b = $('[data-act="sync-connect-do"]'); if (b && !b.disabled) connectDo(b); }
 });
 document.addEventListener('input', e => {
   const el = e.target; if (!S) return;
