@@ -1,0 +1,1646 @@
+<!doctype html>
+<html lang="zh-Hant-TW" data-accent="sage">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FBF9F5">
+<meta name="robots" content="noindex">
+<title>慾望清單・冷靜期</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============ 基礎色票：極簡日系無印風 ============ */
+:root{
+  --bg:#FBF9F5;          /* Soft Cream */
+  --card:#FFFFFF;        /* Warm White */
+  --text:#292524;        /* Warm Charcoal */
+  --muted:#78716C;
+  --faint:#A8A29E;
+  --line:#ECE7DE;
+  --line-2:#DDD6C9;
+  --soft:#F6F3EE;
+  --soft-2:#EFEBE3;
+  --accent:#78866B;      /* Sage Green */
+  --accent-ink:#5D6A51;
+  --accent-soft:rgba(120,134,107,.12);
+  --accent-line:rgba(120,134,107,.38);
+  --danger:#A8564C;
+  --r:12px; --r-sm:8px;
+  --shadow:0 1px 2px rgba(41,37,36,.04),0 6px 20px rgba(41,37,36,.04);
+  --font:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif;
+}
+html[data-accent="slate"]{
+  --accent:#64748B;      /* Slate Blue */
+  --accent-ink:#475569;
+  --accent-soft:rgba(100,116,139,.12);
+  --accent-line:rgba(100,116,139,.38);
+}
+/* ============ 金額區間 / 冷靜期配色 (Severity) ============ */
+.t-green  {--t:#10B981;--t-ink:#047857;--t-bg:rgba(16,185,129,.10);--t-bd:rgba(16,185,129,.30)}
+.t-amber  {--t:#F59E0B;--t-ink:#B45309;--t-bg:rgba(245,158,11,.10);--t-bd:rgba(245,158,11,.30)}
+.t-orange {--t:#F97316;--t-ink:#C2410C;--t-bg:rgba(249,115,22,.10);--t-bd:rgba(249,115,22,.30)}
+.t-crimson{--t:#EF4444;--t-ink:#BE123C;--t-bg:rgba(244,63,94,.10);--t-bd:rgba(244,63,94,.30)}
+.t-violet {--t:#8B5CF6;--t-ink:#6D28D9;--t-bg:rgba(139,92,246,.10);--t-bd:rgba(139,92,246,.30)}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;letter-spacing:.01em}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+a{color:var(--accent-ink)}
+h1,h2,h3,h4{font-weight:500}
+.desc{font-size:12.5px;color:var(--muted);margin:0}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 15px;border-radius:999px;border:1px solid var(--line-2);background:var(--card);cursor:pointer;font-size:14px;white-space:nowrap;transition:background .15s,border-color .15s,color .15s}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.ghost:hover{background:var(--soft-2);color:var(--text)}
+.btn.danger-solid{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn.danger{color:var(--danger)}
+.btn.sm{height:30px;padding:0 12px;font-size:13px}
+.btn.block{width:100%}
+.btn:disabled{cursor:not-allowed;opacity:.6;background:var(--soft)}
+.btn svg{width:14px;height:14px}
+.icon-btn{width:30px;height:30px;border-radius:8px;border:none;background:none;cursor:pointer;color:var(--muted);flex:none;display:inline-grid;place-items:center;font-size:13px}
+.icon-btn:hover{background:var(--soft-2);color:var(--text)}
+.icon-btn svg{width:15px;height:15px}
+.linkbtn{background:none;border:none;color:var(--muted);font-size:12.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:4px}
+:focus-visible{outline:2px solid var(--accent-line);outline-offset:2px}
+
+/* inputs */
+input[type=text],input[type=number],input[type=password],input[type=url],input[type=date],input[type=search],select,textarea{
+  width:100%;height:38px;padding:0 12px;border:1px solid var(--line-2);border-radius:var(--r-sm);background:var(--card);outline:none;transition:border-color .15s,box-shadow .15s;font-size:14px}
+select{padding-right:8px}
+textarea{height:auto;min-height:64px;padding:9px 12px;resize:vertical;line-height:1.55}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);min-width:0}
+.check{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;cursor:pointer;line-height:1.5}
+.check input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+
+/* brand mark：一個停頓的圓 */
+.mark{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--accent);display:inline-grid;place-items:center;flex:none}
+.mark::after{content:"";width:11px;height:11px;border-radius:50%;background:var(--accent)}
+.mark.sm{width:28px;height:28px}.mark.sm::after{width:9px;height:9px}
+.mark.lg{width:48px;height:48px}.mark.lg::after{width:15px;height:15px}
+
+/* ============ Lock screen ============ */
+.lock{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+.lock-card{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:40px 28px 22px;box-shadow:var(--shadow);text-align:center}
+.lock-card h1{margin:16px 0 2px;font-size:22px;letter-spacing:.12em}
+.lock-sub{margin:0;color:var(--muted);font-size:13px;letter-spacing:.2em}
+.lock-fields{display:flex;flex-direction:column;gap:10px;margin:26px 0 6px;text-align:left}
+.lock-note{font-size:13px;color:var(--muted);margin:0 0 4px;line-height:1.7}
+.lock-note b{color:var(--text);font-weight:500}
+.lock-foot{font-size:12px;color:var(--faint);margin:18px 0 6px;line-height:1.7}
+.err{color:var(--danger);font-size:13px;min-height:1.2em;margin:4px 0 10px}
+
+/* ============ Top bar ============ */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(251,249,245,.9);backdrop-filter:saturate(1.2) blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1180px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:22px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand b{font-weight:700;font-size:16px;letter-spacing:.08em;display:block;line-height:1.2}
+.brand small{display:block;font-size:10px;color:var(--muted);letter-spacing:.22em;line-height:1.4}
+.tabs{display:flex;gap:2px;margin-right:auto}
+.tab{border:none;background:none;padding:6px 15px;border-radius:999px;cursor:pointer;color:var(--muted);font-size:14px;white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.on{background:var(--accent-soft);color:var(--accent-ink);font-weight:500}
+.top-actions{display:flex;align-items:center;gap:6px}
+.save-ind{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:7px;margin-right:6px;white-space:nowrap}
+.save-ind i{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);transition:background .2s}
+.save-ind.saved i{animation:glow 1.2s ease-out 1}
+.save-ind.saving i{background:var(--faint);box-shadow:none;animation:pulse 1s infinite}
+.save-ind.error i{background:var(--danger);box-shadow:none}
+@keyframes pulse{50%{opacity:.35}}
+@keyframes glow{0%{box-shadow:0 0 0 0 var(--accent-line)}100%{box-shadow:0 0 0 3px var(--accent-soft)}}
+
+.main{max-width:1180px;margin:0 auto;padding:24px 20px 96px}
+
+/* ============ List view ============ */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:1px}
+.stat-label{font-size:12px;color:var(--muted);letter-spacing:.06em}
+.stat-num{font-size:24px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.35}
+.stat-num small{font-size:12px;color:var(--muted);font-weight:400;margin-left:2px}
+.stat-sub{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stat.good .stat-sub{color:var(--accent-ink)}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.seg{display:inline-flex;background:var(--soft-2);border-radius:999px;padding:3px;overflow-x:auto;max-width:100%;scrollbar-width:none}
+.seg button{border:none;background:none;padding:5px 13px;border-radius:999px;font-size:13px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.seg button.on{background:var(--card);color:var(--text);box-shadow:0 1px 2px rgba(41,37,36,.08)}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters input{width:190px;height:34px}
+.filters select{width:auto;min-width:112px;height:34px;font-size:13px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px 12px 20px;display:flex;flex-direction:column;gap:7px;position:relative;overflow:hidden;transition:box-shadow .2s}
+.item:hover{box-shadow:var(--shadow)}
+.item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--t)}
+.item.done{background:#FDFCFA}
+.item.done::before{opacity:.4}
+.item-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.badge{font-size:12px;padding:1px 9px;border-radius:999px;white-space:nowrap;background:var(--t-bg);color:var(--t-ink);border:1px solid var(--t-bd)}
+.prio{font-size:12px;color:var(--muted);border:1px solid var(--line-2);border-radius:6px;padding:0 7px;min-width:26px;text-align:center}
+.item h3{margin:2px 0 0;font-size:15.5px;line-height:1.5;word-break:break-word}
+.amount{font-size:21px;font-variant-numeric:tabular-nums;letter-spacing:.02em;line-height:1.3}
+.meta{font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;align-items:center;gap:3px 10px}
+.tag{font-size:11.5px;padding:0 7px;border-radius:4px;background:var(--accent-soft);color:var(--accent-ink)}
+.track{height:4px;background:var(--soft-2);border-radius:99px;overflow:hidden;margin-top:3px}
+.track i{display:block;height:100%;background:var(--t);border-radius:99px;opacity:.75}
+.cd{font-size:13px}
+.cd b{font-weight:500;color:var(--t-ink);font-variant-numeric:tabular-nums}
+.facts{font-size:12.5px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);border-left:2px solid var(--line-2);padding-left:9px;margin:2px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.link-out{font-size:12.5px;color:var(--accent-ink);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.link-out:hover{text-decoration:underline}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;padding-top:10px;border-top:1px dashed var(--line)}
+.actions .spacer{flex:1}
+.empty{grid-column:1/-1;text-align:center;padding:60px 16px;color:var(--muted);border:1px dashed var(--line-2);border-radius:var(--r);background:rgba(255,255,255,.4)}
+.empty h3{color:var(--text);margin:16px 0 4px;font-size:17px}
+.empty p{margin:0}
+.empty-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:20px}
+
+/* ============ Panels ============ */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+.panel h2{font-size:15.5px;margin:0}
+.panel h3{font-size:14px;margin:0 0 4px}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px 14px;margin-bottom:14px;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:16px}
+
+/* ============ Calendar ============ */
+.cal-wrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.cal-nav{display:flex;align-items:center;gap:6px;margin-bottom:14px}
+.cal-nav h2{margin:0 auto 0 0;font-size:18px;letter-spacing:.04em}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.cal-wd{font-size:12px;color:var(--muted);text-align:center;padding:6px 0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--soft)}
+.cal-cell{min-height:108px;padding:6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;display:flex;flex-direction:column;gap:3px;min-width:0;transition:background .12s}
+.cal-cell:hover{background:var(--soft)}
+.cal-cell.out{background:#FCFBF8}
+.cal-cell.out .cal-num{color:var(--faint)}
+.cal-cell.drop{background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px var(--accent-line)}
+.cal-head{display:flex;align-items:center;gap:4px;min-width:0;margin-bottom:2px}
+.cal-num{font-size:12.5px;width:23px;height:23px;display:inline-grid;place-items:center;border-radius:50%;flex:none;font-variant-numeric:tabular-nums}
+.today .cal-num{background:var(--accent);color:#fff}
+.fest{font-size:10.5px;color:var(--accent-ink);background:var(--accent-soft);padding:0 5px;border-radius:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.chip{font-size:11.5px;line-height:1.55;padding:0 6px;border-radius:5px;background:var(--t-bg);color:var(--t-ink);border:1px solid var(--t-bd);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.chip.start::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--t);margin-right:5px;vertical-align:middle;position:relative;top:-1px}
+.chip.unlock{background:transparent;border-style:dashed}
+.chip[draggable=true]{cursor:grab}
+.more{font-size:11px;color:var(--muted);background:none;border:none;text-align:left;padding:0 2px;cursor:pointer}
+.more:hover{color:var(--text)}
+.drill-item{padding:12px 0 10px;border-top:1px solid var(--line)}
+.drill-item:first-of-type{margin-top:12px}
+.drill-title{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.drill-title b{font-weight:500}
+.drill-title span{font-size:12px;color:var(--muted)}
+.drill-row{display:flex;justify-content:space-between;font-size:12.5px;padding:2px 0;font-variant-numeric:tabular-nums}
+.drill-row.late{color:var(--faint)}
+.drill-row.late .dot{opacity:.35}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--t);display:inline-block;margin-right:7px;vertical-align:middle;position:relative;top:-1px}
+.legend-row{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-top:8px}
+.legend-row .chip{width:58px;flex:none;cursor:default}
+
+/* ============ Gantt ============ */
+.pool{font-size:13px;color:var(--muted)}
+.pool b{color:var(--accent-ink);font-weight:500;font-size:15px;font-variant-numeric:tabular-nums}
+.g-axis,.g-row{display:grid;grid-template-columns:210px minmax(0,1fr);gap:14px;align-items:center}
+.g-axis .g-track{height:20px}
+.g-tick{position:absolute;top:0;font-size:11px;color:var(--faint);transform:translateX(-50%);white-space:nowrap;font-variant-numeric:tabular-nums}
+.g-row{padding:9px 0;border-top:1px solid var(--line)}
+.g-label{min-width:0;cursor:pointer}
+.g-label b{display:block;font-weight:500;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-label span{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.g-label:hover b{color:var(--accent-ink)}
+.g-track{position:relative;height:28px}
+.g-grid{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+.g-today{position:absolute;top:-10px;bottom:-10px;width:0;border-left:1.5px dashed var(--accent);z-index:2}
+.g-bar{position:absolute;top:3px;height:22px;border-radius:6px;background:var(--t-bg);border:1px solid var(--t-bd);display:flex;align-items:center;overflow:hidden;z-index:1}
+.g-fill{position:absolute;left:0;top:0;bottom:0;background:var(--t);opacity:.2}
+.g-bar.unlocked .g-fill{opacity:.42}
+.g-text{position:relative;font-size:11.5px;color:var(--t-ink);padding:0 8px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.g-text.out{position:absolute;top:6px;padding:0;z-index:1}
+.g-today-label{position:absolute;top:-2px;font-size:10.5px;color:var(--accent-ink);transform:translateX(-50%);background:var(--card);padding:0 4px;z-index:3}
+.g-empty{padding:28px 0;text-align:center;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+
+.kv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.budget{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.budget-top{display:flex;justify-content:space-between;align-items:baseline;font-size:13.5px;margin-bottom:8px;gap:8px}
+.budget-top b{font-weight:500;font-variant-numeric:tabular-nums}
+.budget-top b.over{color:#BE123C}
+.bar{height:10px;border-radius:99px;background:var(--soft-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+.bar.over i{background:#EF4444;opacity:.7}
+.bar + .desc{margin-top:8px}
+.goal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.mini{background:var(--soft);border-radius:10px;padding:12px 14px}
+.mini small{display:block;color:var(--muted);font-size:12px}
+.mini b{font-size:17px;font-weight:500;font-variant-numeric:tabular-nums}
+.mini p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+
+/* ============ Settings ============ */
+.settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.settings .panel > .desc{margin:4px 0 14px}
+.list-edit{display:flex;flex-direction:column;gap:6px;max-height:430px;overflow:auto;padding:2px 4px 2px 2px}
+.le-row{display:flex;gap:6px;align-items:center}
+.le-row input{height:34px}
+.le-row input.num{width:64px;flex:none;text-align:center;padding:0 6px}
+.le-row .rule{font-size:12px;color:var(--muted);white-space:nowrap;flex:none;width:134px;text-align:center}
+.le-row .count{font-size:12px;color:var(--faint);white-space:nowrap;min-width:38px;text-align:right;font-variant-numeric:tabular-nums}
+.le-row .order{font-size:12px;color:var(--faint);width:18px;text-align:center;flex:none}
+.add-row{display:flex;gap:6px;margin-top:12px}
+.add-row input{height:34px}
+.add-row input.num{width:64px;flex:none;text-align:center;padding:0 6px}
+.row-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.swatches{display:flex;gap:10px;margin:8px 0 18px}
+.sw{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border:1px solid var(--line-2);border-radius:999px;background:var(--card);cursor:pointer;font-size:13px}
+.sw i{width:16px;height:16px;border-radius:50%}
+.sw.on{border-color:var(--text);box-shadow:0 0 0 1px var(--text)}
+.field-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:14px}
+.field-row select{width:auto}
+.zone{margin-top:16px;padding-top:14px;border-top:1px dashed var(--line-2)}
+.zone h3{color:var(--danger);font-size:13px}
+
+/* ============ Modal ============ */
+.overlay{position:fixed;inset:0;background:rgba(41,37,36,.26);display:grid;place-items:center;padding:16px;z-index:50;animation:fade .15s ease-out}
+@keyframes fade{from{opacity:0}}
+@keyframes rise{from{transform:translateY(8px);opacity:.6}}
+.modal{width:100%;max-width:560px;max-height:calc(100vh - 32px);background:var(--card);border-radius:16px;box-shadow:0 24px 64px rgba(41,37,36,.16);display:flex;flex-direction:column;overflow:hidden;animation:rise .18s ease-out}
+.modal.sm{max-width:420px}
+.modal > header{display:flex;align-items:center;justify-content:space-between;padding:15px 18px 15px 22px;border-bottom:1px solid var(--line)}
+.modal > header h2{margin:0;font-size:16px}
+.modal-body{padding:18px 22px;overflow:auto;display:flex;flex-direction:column;gap:14px}
+.modal-body p{margin:0;line-height:1.7}
+.modal > footer{display:flex;align-items:center;gap:8px;padding:12px 18px 12px 22px;border-top:1px solid var(--line);background:var(--soft)}
+.modal > footer .hint{margin-right:auto;font-size:12px;color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.preview{border-radius:10px;padding:10px 13px;background:var(--t-bg);border:1px solid var(--t-bd);font-size:13px;color:var(--t-ink);line-height:1.6}
+.preview.neutral{background:var(--soft);border-color:var(--line);color:var(--muted)}
+.preview b{font-weight:500}
+.reflect{display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:10px;background:var(--soft)}
+.reflect h4{margin:0;font-size:13.5px}
+.reflect label.f{color:var(--text)}
+.newcat{display:flex;gap:6px}
+.newcat input{height:34px}
+.buy-head{display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:10px;border:1px solid var(--t-bd);background:var(--t-bg)}
+.buy-head .badge{align-self:flex-start;background:var(--card)}
+.buy-head b{font-weight:500;font-size:15px}
+.quote{font-size:13.5px;background:var(--soft);border-radius:10px;padding:10px 13px;white-space:pre-wrap}
+.quote small{display:block;color:var(--muted);font-size:12px;margin-bottom:2px}
+.pp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.day-row{display:flex;align-items:center;gap:4px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer}
+.day-row:hover{background:var(--soft)}
+.day-row span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.day-row small{color:var(--muted);font-size:12px;white-space:nowrap}
+
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(16px);background:var(--text);color:var(--bg);padding:10px 20px;border-radius:999px;font-size:13.5px;opacity:0;pointer-events:none;transition:.25s;z-index:90;max-width:calc(100vw - 32px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ============ Responsive ============ */
+@media (max-width:960px){
+  .cal-wrap{grid-template-columns:1fr}
+  .settings{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  .topbar-in{flex-wrap:wrap;padding:10px 16px 0;gap:8px 10px}
+  .tabs{order:3;width:100%;margin:0 -4px;overflow-x:auto;padding-bottom:8px}
+  .top-actions{margin-left:auto}
+  .save-ind span{display:none}
+  .main{padding:18px 16px 96px}
+  .stats{grid-template-columns:repeat(2,1fr);gap:10px}
+  .filters{width:100%}
+  .filters input{flex:1 1 100%;width:auto}
+  .filters select{flex:1 1 30%;min-width:0}
+  .grid{grid-template-columns:1fr}
+  .kv{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .goal-grid{grid-template-columns:1fr}
+  .g-axis,.g-row{grid-template-columns:1fr;gap:4px}
+  .g-axis > .g-label{display:none}
+}
+@media (max-width:640px){
+  .cal-cell{min-height:70px;padding:3px}
+  .chip{font-size:10px;padding:0 3px;border-radius:3px}
+  .chip.start::before{display:none}
+  .fest{display:none}
+  .has-fest .cal-num{box-shadow:inset 0 -2px 0 var(--accent)}
+  .today.has-fest .cal-num{box-shadow:none}
+}
+@media (max-width:520px){
+  .row2{grid-template-columns:1fr}
+  .overlay{place-items:end center;padding:0}
+  .modal,.modal.sm{max-width:none;border-radius:18px 18px 0 0;max-height:92vh}
+  .pp-grid{grid-template-columns:repeat(2,1fr)}
+  .btn.add-label span{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 門禁 ================= -->
+<section id="lock" class="lock" hidden>
+  <form class="lock-card" id="lock-form" autocomplete="off">
+    <span class="mark lg"></span>
+    <h1>慾望清單</h1>
+    <p class="lock-sub">冷靜期 · 延遲滿足</p>
+    <div id="lock-fields" class="lock-fields"></div>
+    <p class="err" id="lock-err"></p>
+    <button class="btn primary block" id="lock-btn" type="submit">解鎖</button>
+    <p class="lock-foot">資料以主密碼加密（AES-256-GCM），<br>只保存在這台裝置的瀏覽器中。</p>
+    <button type="button" class="linkbtn" data-act="reset-all" id="reset-link">忘記主密碼？清除資料重新開始</button>
+  </form>
+</section>
+
+<!-- ================= App ================= -->
+<div id="app" hidden>
+  <header class="topbar">
+    <div class="topbar-in">
+      <div class="brand"><span class="mark sm"></span><div><b>慾望清單</b><small>COOLING-OFF</small></div></div>
+      <nav class="tabs" id="tabs">
+        <button class="tab" data-act="tab" data-v="list">清單</button>
+        <button class="tab" data-act="tab" data-v="calendar">日曆</button>
+        <button class="tab" data-act="tab" data-v="gantt">甘特圖</button>
+        <button class="tab" data-act="tab" data-v="settings">設定</button>
+      </nav>
+      <div class="top-actions">
+        <span class="save-ind saved" id="save-ind"><i></i><span>已自動儲存</span></span>
+        <button class="btn primary add-label" data-act="add">＋<span> 新增慾望</span></button>
+        <button class="icon-btn" data-act="lock" title="鎖定" aria-label="鎖定">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="main" id="view"></main>
+</div>
+
+<div id="modal-root"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="file-json" accept=".json,application/json" hidden>
+<input type="file" id="file-csv" accept=".csv,text/csv" hidden>
+<noscript><p style="padding:40px;text-align:center">此網站需要啟用 JavaScript。</p></noscript>
+
+<script>
+(() => {
+'use strict';
+
+/* =====================================================================
+ * 1. 常數：冷靜期矩陣 / 預設分類
+ * ===================================================================== */
+const DAY = 864e5, HOUR = 36e5, MIN = 6e4;
+const PBKDF2_ITER = 310000;
+
+const TIERS = [
+  { key:'green',   max:500,      sign:'$',     label:'微額', days:1,  cls:'t-green',   questions:['是否為重複購買？','家中有無同等替代品？'] },
+  { key:'amber',   max:3000,     sign:'$$',    label:'小額', days:3,  cls:'t-amber',   questions:['一週後是否依然渴望？','是否符合本月預算？'] },
+  { key:'orange',  max:10000,    sign:'$$$',   label:'中額', days:7,  cls:'t-orange',  questions:['換算需要工作多少小時？你能接受嗎？','能否改租借或買二手？'] },
+  { key:'crimson', max:30000,    sign:'$$$$',  label:'大額', days:14, cls:'t-crimson', questions:['是否會破壞年度儲蓄計畫？','是否有非買不可的急迫性？'] },
+  { key:'violet',  max:Infinity, sign:'$$$$$', label:'重大', days:30, cls:'t-violet',  questions:['是否需要召開家庭會議？','是否牽涉分期付款與利息？'] },
+];
+const tierOf = a => TIERS.find(t => (Number(a) || 0) <= t.max);
+const tierDays = t => t.days === 1 ? '24 小時' : `${t.days} 天`;
+
+const DEFAULT_CATS = ['運動健身','寵物用品','教育學習','生活居家','旅遊度假','3C 數位','美妝護膚','服飾鞋包','汽機車配件','娛樂電玩',
+  '戶外露營','美食餐飲','汽水零食','書籍雜誌','工作生產力','展覽演出','禮物送禮','理財投資','訂閱服務','雜項支出'];
+
+function defaultState(){
+  return {
+    v: 1,
+    settings: { savingsPool:50000, savingsGoal:100000, monthlySaving:10000, hourlyWage:200, accent:'sage', autoLockMin:15 },
+    categories: DEFAULT_CATS.map((name,i) => ({ id:'c'+String(i+1).padStart(2,'0'), name })),
+    priorities: [ {id:'pB',name:'B'}, {id:'pM',name:'M'}, {id:'pH',name:'H'} ],
+    festivals: [
+      { id:'f618',  name:'618 年中慶', m:6,  d:18 },
+      { id:'f88',   name:'88 父親節',  m:8,  d:8 },
+      { id:'f1111', name:'雙 11',      m:11, d:11 },
+      { id:'fbf',   name:'黑色星期五', rule:'blackfriday' },
+      { id:'f1212', name:'雙 12',      m:12, d:12 },
+      { id:'fxmas', name:'聖誕節',     m:12, d:25 },
+    ],
+    items: [],
+    draft: null,
+    ui: { tab:'list', calY:null, calM:null, lastCat:null },
+  };
+}
+
+/* =====================================================================
+ * 2. 工具函式
+ * ===================================================================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => 'NT$ ' + Math.round(Number(n) || 0).toLocaleString('zh-TW');
+const n1 = x => (Math.round(x * 10) / 10).toLocaleString('zh-TW');
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+const now = () => Date.now();
+const pad = n => String(n).padStart(2, '0');
+const ymd = t => { const d = new Date(t); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+const parseYmd = s => { const [y,m,d] = String(s).split('-').map(Number); return new Date(y, m-1, d).getTime(); };
+const sod = t => { const d = new Date(t); d.setHours(0,0,0,0); return d.getTime(); };
+const fmtMD = t => { const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()}`; };
+const fmtDT = t => { const d = new Date(t); return `${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const safeUrl = u => { const s = String(u || '').trim(); return /^https?:\/\//i.test(s) ? s : ''; };
+const sum = a => a.reduce((s,i) => s + (Number(i.amount) || 0), 0);
+const hostOf = u => { try { const x = new URL(u); return x.hostname.replace(/^www\./,'') + x.pathname.replace(/\/$/,''); } catch { return u; } };
+
+function remain(ms){
+  if (ms <= 0) return '0 分鐘';
+  const d = Math.floor(ms / DAY), h = Math.floor(ms % DAY / HOUR), m = Math.ceil(ms % HOUR / MIN);
+  if (d > 0) return `${d} 天 ${h} 小時`;
+  if (h > 0) return `${h} 小時 ${m % 60} 分`;
+  return `${m} 分鐘`;
+}
+function remainShort(ms){
+  if (ms >= DAY) return `${Math.ceil(ms / DAY)} 天`;
+  if (ms >= HOUR) return `${Math.ceil(ms / HOUR)} 小時`;
+  return `${Math.max(1, Math.ceil(ms / MIN))} 分鐘`;
+}
+
+const ICON = {
+  lock:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  left:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg>',
+  right:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg>',
+  close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 15l6-6 6 6"/></svg>',
+  down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>',
+};
+
+let toastTimer;
+function toast(msg){
+  const el = $('#toast'); el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+/* =====================================================================
+ * 3. 加密（Web Crypto：PBKDF2 → AES-256-GCM）
+ * ===================================================================== */
+const te = new TextEncoder(), td = new TextDecoder();
+const b64 = buf => { const b = new Uint8Array(buf); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
+async function deriveKey(pw, salt, iter){
+  const base = await crypto.subtle.importKey('raw', te.encode(pw), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name:'PBKDF2', salt, iterations:iter, hash:'SHA-256' }, base, { name:'AES-GCM', length:256 }, false, ['encrypt','decrypt']);
+}
+async function seal(key, obj){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, te.encode(JSON.stringify(obj)));
+  return { iv:b64(iv), ct:b64(ct), savedAt:Date.now() };
+}
+async function unseal(key, v){
+  const pt = await crypto.subtle.decrypt({ name:'AES-GCM', iv:unb64(v.iv) }, key, unb64(v.ct));
+  return JSON.parse(td.decode(pt));
+}
+
+/* =====================================================================
+ * 4. 儲存層：IndexedDB（主）+ localStorage（鏡像備援）
+ *    儲存內容只有密文；salt / iter 與密文放在同一筆紀錄，確保原子寫入
+ * ===================================================================== */
+const IDB = {
+  db:null,
+  open(){
+    if (this.db) return Promise.resolve(this.db);
+    return new Promise((res, rej) => {
+      if (!('indexedDB' in window)) return rej(new Error('no idb'));
+      const r = indexedDB.open('dms', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => { this.db = r.result; res(this.db); };
+      r.onerror = () => rej(r.error);
+    });
+  },
+  async get(k){ const db = await this.open(); return new Promise((res, rej) => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result ?? null); q.onerror = () => rej(q.error); }); },
+  async set(k, v){ const db = await this.open(); return new Promise((res, rej) => { const tx = db.transaction('kv','readwrite'); tx.objectStore('kv').put(v, k); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); }); },
+  async del(k){ const db = await this.open(); return new Promise((res, rej) => { const tx = db.transaction('kv','readwrite'); tx.objectStore('kv').delete(k); tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error); }); },
+};
+const LS = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } },
+  del(k){ try { localStorage.removeItem(k); } catch {} },
+};
+async function readVault(){
+  let a = null; try { a = await IDB.get('vault'); } catch {}
+  const b = LS.get('dms.vault');
+  if (a && b) return (b.savedAt || 0) > (a.savedAt || 0) ? b : a;
+  return a || b;
+}
+async function writeVault(v){
+  let ok = false;
+  try { await IDB.set('vault', v); ok = true; } catch {}
+  if (LS.set('dms.vault', v)) ok = true;
+  if (!ok) throw new Error('無法寫入瀏覽器儲存空間');
+}
+
+/* =====================================================================
+ * 5. Session 與自動儲存（Debounce 500ms）
+ * ===================================================================== */
+let KEY = null, META = null, S = null;
+let saveTimer = null, dirty = false, saving = Promise.resolve();
+
+function touch(){
+  dirty = true; setInd('saving');
+  clearTimeout(saveTimer); saveTimer = setTimeout(flush, 500);
+}
+function flush(){
+  clearTimeout(saveTimer);
+  if (!dirty || !KEY || !S) return saving;
+  dirty = false;
+  const snap = S, key = KEY, meta = META;
+  saving = saving.then(async () => {
+    try {
+      const sealed = await seal(key, snap);
+      await writeVault({ v:1, salt:meta.salt, iter:meta.iter, ...sealed });
+      if (S === snap) {
+        setInd('saved');
+        const h = $('#draft-hint'); if (h) h.textContent = '● 草稿已自動儲存 ' + fmtDT(now()).split(' ')[1];
+      }
+    } catch (e) { dirty = true; setInd('error'); }
+  });
+  return saving;
+}
+function setInd(state){
+  const el = $('#save-ind'); if (!el) return;
+  el.className = 'save-ind ' + state;
+  el.querySelector('span').textContent = { saving:'儲存中…', saved:'已自動儲存', error:'儲存失敗' }[state];
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
+window.addEventListener('pagehide', () => flush());
+
+function migrate(d){
+  const base = defaultState();
+  const s = { ...base, ...(d || {}) };
+  s.settings = { ...base.settings, ...(d?.settings || {}) };
+  s.ui = { ...base.ui, ...(d?.ui || {}) };
+  for (const k of ['categories','priorities','festivals','items']) if (!Array.isArray(s[k])) s[k] = base[k];
+  if (!s.categories.length) s.categories = base.categories;
+  if (!s.priorities.length) s.priorities = base.priorities;
+  s.items.forEach(i => {
+    i.id ??= uid(); i.status ??= 'active'; i.extraDays ??= 0; i.reflections ??= {};
+    i.createdAt ??= now(); i.startAt ??= i.createdAt; i.amount = Number(i.amount) || 0;
+  });
+  return s;
+}
+
+/* =====================================================================
+ * 6. 門禁：設定 / 解鎖 / 鎖定
+ * ===================================================================== */
+let lockMode = 'unlock';
+
+async function showLock(){
+  const v = await readVault();
+  const setupMode = !v;
+  lockMode = setupMode ? 'setup' : 'unlock';
+  $('#lock-fields').innerHTML = setupMode
+    ? `<p class="lock-note">第一次使用，請設定主密碼。<br>所有資料都會用它加密，<b>忘記將無法找回</b>。</p>
+       <input type="password" id="pw1" placeholder="設定主密碼（至少 4 個字元）" autocomplete="new-password">
+       <input type="password" id="pw2" placeholder="再輸入一次" autocomplete="new-password">`
+    : `<input type="password" id="pw1" placeholder="輸入主密碼" autocomplete="current-password">`;
+  $('#lock-btn').textContent = setupMode ? '建立並進入' : '解鎖';
+  $('#reset-link').hidden = setupMode;
+  $('#lock-err').textContent = (window.crypto && crypto.subtle) ? '' : '此環境不支援加密，請以 https 網址或最新版瀏覽器開啟。';
+  $('#app').hidden = true; $('#lock').hidden = false;
+  setTimeout(() => $('#pw1')?.focus(), 60);
+}
+
+$('#lock-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const pw = $('#pw1')?.value || '', err = $('#lock-err'), btn = $('#lock-btn');
+  if (!(window.crypto && crypto.subtle)) return;
+  const label = btn.textContent;
+  btn.disabled = true; btn.textContent = '處理中…'; err.textContent = '';
+  try {
+    if (lockMode === 'setup') {
+      if (pw.length < 4) throw new Error('主密碼至少需要 4 個字元');
+      if (pw !== $('#pw2').value) throw new Error('兩次輸入的密碼不一致');
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      META = { salt:b64(salt), iter:PBKDF2_ITER };
+      KEY = await deriveKey(pw, salt, PBKDF2_ITER);
+      S = defaultState();
+      dirty = true; await flush();
+    } else {
+      const v = await readVault();
+      const key = await deriveKey(pw, unb64(v.salt), v.iter);
+      let data;
+      try { data = await unseal(key, v); } catch { throw new Error('主密碼不正確'); }
+      KEY = key; META = { salt:v.salt, iter:v.iter }; S = migrate(data);
+    }
+    enterApp();
+  } catch (ex) {
+    err.textContent = ex.message || '發生錯誤，請再試一次';
+    $('#pw1')?.select();
+  } finally {
+    btn.disabled = false; btn.textContent = label;
+  }
+});
+
+function enterApp(){
+  $('#lock').hidden = true; $('#app').hidden = false;
+  $('#lock-fields').innerHTML = '';
+  lastActive = now();
+  setInd('saved');
+  render();
+  if (S.draft) { renderItemModal(); toast('已為你復原上次未儲存的編輯'); }
+}
+
+async function lockApp(){
+  await flush();
+  KEY = null; S = null; META = null;
+  $('#modal-root').innerHTML = ''; modalKind = null; dialogResolve = null;
+  $('#view').innerHTML = '';
+  showLock();
+}
+
+/* 閒置自動鎖定 + 倒數更新 */
+let lastActive = now();
+['pointerdown','keydown','wheel','touchstart'].forEach(ev => document.addEventListener(ev, () => { lastActive = now(); }, { passive:true }));
+setInterval(() => {
+  if (!S) return;
+  const m = Number(S.settings.autoLockMin) || 0;
+  if (m > 0 && now() - lastActive > m * MIN) { lockApp(); return; }
+  tick();
+}, 30000);
+function tick(){
+  if (modalKind) return;
+  const a = document.activeElement;
+  if (a && a.closest && a.closest('#view') && /INPUT|SELECT|TEXTAREA/.test(a.tagName)) return;
+  if (S.ui.tab === 'list') renderList();
+  else if (S.ui.tab === 'gantt') renderGanttDyn();
+}
+
+/* =====================================================================
+ * 7. 品項邏輯：冷靜期、狀態、換算
+ * ===================================================================== */
+const catName  = id => S.categories.find(c => c.id === id)?.name || '未分類';
+const prioName = id => S.priorities.find(p => p.id === id)?.name || '—';
+const prioIdx  = id => { const i = S.priorities.findIndex(p => p.id === id); return i < 0 ? 99 : i; };
+const festName = id => S.festivals.find(f => f.id === id)?.name || '';
+const getItem  = id => S.items.find(i => i.id === id);
+
+const unlockAt = it => it.startAt + (tierOf(it.amount).days + (Number(it.extraDays) || 0)) * DAY;
+function stateOf(it){
+  if (it.status === 'purchased' || it.status === 'abandoned') return it.status;
+  return now() >= unlockAt(it) ? 'unlocked' : 'cooling';
+}
+const isActive = it => { const s = stateOf(it); return s === 'cooling' || s === 'unlocked'; };
+function progressOf(it){
+  const total = unlockAt(it) - it.startAt;
+  return Math.max(0, Math.min(1, (now() - it.startAt) / total));
+}
+const dailySaving = () => (Number(S.settings.monthlySaving) || 0) / 30;
+function factsOf(amount){
+  const out = [], w = Number(S.settings.hourlyWage) || 0, d = dailySaving();
+  if (w > 0) out.push(`約需工作 ${n1(amount / w)} 小時`);
+  if (d > 0) out.push(`延後儲蓄目標 ${n1(amount / d)} 天`);
+  return out.join(' · ');
+}
+function computeStart(ds, it){
+  if (!ds) return it ? it.startAt : now();
+  if (it && ymd(it.startAt) === ds) return it.startAt;
+  if (ds === ymd(now())) return now();
+  return parseYmd(ds);
+}
+
+/* 購物節 */
+function festDate(f, y){
+  if (f.rule === 'blackfriday') {
+    const wd = new Date(y, 10, 1).getDay();
+    const fourthThu = 1 + ((4 - wd + 7) % 7) + 21;
+    return new Date(y, 10, fourthThu + 1).getTime();
+  }
+  return new Date(y, (f.m || 1) - 1, f.d || 1).getTime();
+}
+function festMap(years){
+  const m = {};
+  for (const y of years) for (const f of S.festivals) (m[ymd(festDate(f, y))] ??= []).push(f.name);
+  return m;
+}
+function upcomingFests(n){
+  const t0 = sod(now()), y = new Date().getFullYear();
+  return S.festivals.map(f => { let d = festDate(f, y); if (d < t0) d = festDate(f, y + 1); return { f, d }; })
+    .sort((a, b) => a.d - b.d).slice(0, n);
+}
+
+/* =====================================================================
+ * 8. Render：主框架
+ * ===================================================================== */
+const view = $('#view');
+const F = { status:'active', cat:'all', tier:'all', q:'', sort:'unlock' };
+
+function render(){
+  document.documentElement.dataset.accent = S.settings.accent === 'slate' ? 'slate' : 'sage';
+  document.querySelectorAll('#tabs .tab').forEach(b => b.classList.toggle('on', b.dataset.v === S.ui.tab));
+  ({ list:renderList, calendar:renderCalendar, gantt:renderGantt, settings:renderSettings }[S.ui.tab] || renderList)();
+}
+
+/* ---------- 清單 ---------- */
+function renderList(){
+  const cooling = S.items.filter(i => stateOf(i) === 'cooling');
+  const unlocked = S.items.filter(i => stateOf(i) === 'unlocked');
+  const bought = S.items.filter(i => i.status === 'purchased');
+  const dropped = S.items.filter(i => i.status === 'abandoned');
+  const stat = (label, n, sub, cls = '') =>
+    `<div class="stat ${cls}"><span class="stat-label">${label}</span><span class="stat-num">${n}<small>項</small></span><span class="stat-sub">${sub}</span></div>`;
+  const seg = [['active','進行中'],['cooling','冷靜中'],['unlocked','已解鎖'],['purchased','已購買'],['abandoned','已放棄'],['all','全部']];
+  view.innerHTML = `
+    <section class="stats">
+      ${stat('冷靜中', cooling.length, fmt(sum(cooling)))}
+      ${stat('已解鎖・待決定', unlocked.length, fmt(sum(unlocked)))}
+      ${stat('已放棄・省下', dropped.length, fmt(sum(dropped)), 'good')}
+      ${stat('已購買', bought.length, fmt(sum(bought)))}
+    </section>
+    <section class="toolbar">
+      <div class="seg">${seg.map(([k,l]) => `<button data-act="f-status" data-v="${k}" class="${F.status === k ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <div class="filters">
+        <input type="search" placeholder="搜尋品項、理由…" data-filter="q" value="${esc(F.q)}">
+        <select data-filter="cat" aria-label="分類"><option value="all">全部分類</option>${S.categories.map(c => `<option value="${c.id}" ${F.cat === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</select>
+        <select data-filter="tier" aria-label="金額區間"><option value="all">全部金額</option>${TIERS.map(t => `<option value="${t.key}" ${F.tier === t.key ? 'selected' : ''}>${t.sign} ${t.label}</option>`).join('')}</select>
+        <select data-filter="sort" aria-label="排序">
+          ${[['unlock','最快解鎖'],['priority','重要順序'],['amountDesc','金額高→低'],['amountAsc','金額低→高'],['newest','最新加入']].map(([k,l]) => `<option value="${k}" ${F.sort === k ? 'selected' : ''}>${l}</option>`).join('')}
+        </select>
+      </div>
+    </section>
+    <section class="grid" id="grid"></section>`;
+  renderGrid();
+}
+
+function renderGrid(){
+  const g = $('#grid'); if (!g) return;
+  const q = F.q.trim().toLowerCase();
+  const arr = S.items.filter(it => {
+    const s = stateOf(it);
+    if (F.status === 'active' && !(s === 'cooling' || s === 'unlocked')) return false;
+    if (!['active','all'].includes(F.status) && s !== F.status) return false;
+    if (F.cat !== 'all' && it.categoryId !== F.cat) return false;
+    if (F.tier !== 'all' && tierOf(it.amount).key !== F.tier) return false;
+    if (q && !`${it.name} ${it.note || ''} ${catName(it.categoryId)}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  const sorters = {
+    unlock: (a,b) => unlockAt(a) - unlockAt(b),
+    priority: (a,b) => prioIdx(a.priorityId) - prioIdx(b.priorityId) || unlockAt(a) - unlockAt(b),
+    amountDesc: (a,b) => b.amount - a.amount,
+    amountAsc: (a,b) => a.amount - b.amount,
+    newest: (a,b) => b.createdAt - a.createdAt,
+  };
+  arr.sort(sorters[F.sort] || sorters.unlock);
+  if (!arr.length) {
+    g.innerHTML = S.items.length
+      ? `<div class="empty"><p>沒有符合條件的品項。</p></div>`
+      : `<div class="empty"><span class="mark lg"></span><h3>清單是空的</h3><p>想買什麼，先放進來冷靜一下。</p>
+         <div class="empty-actions"><button class="btn primary" data-act="add">＋ 新增第一個慾望</button><button class="btn" data-act="load-sample">載入範例（試算表 4 筆）</button></div></div>`;
+    return;
+  }
+  g.innerHTML = arr.map(card).join('');
+}
+
+function card(it){
+  const t = tierOf(it.amount), s = stateOf(it), ua = unlockAt(it);
+  const done = s === 'purchased' || s === 'abandoned';
+  let status = '';
+  if (s === 'cooling') {
+    status = it.startAt > now()
+      ? `預計 ${fmtMD(it.startAt)} 開始冷靜 · ${fmtDT(ua)} 解鎖`
+      : `剩餘 <b>${remain(ua - now())}</b> · ${fmtDT(ua)} 解鎖`;
+  } else if (s === 'unlocked') status = `<b>已解鎖</b>，可以做決定了`;
+  else if (s === 'purchased') status = `已於 ${fmtMD(it.decidedAt)} 購買`;
+  else status = `已於 ${fmtMD(it.decidedAt)} 放棄 · 省下 ${fmt(it.amount)}`;
+
+  const link = safeUrl(it.link);
+  const fest = festName(it.festival);
+  const extra = Math.round(Number(it.extraDays) || 0);
+  const facts = factsOf(it.amount);
+  const tools = `<span class="spacer"></span>
+    <button class="icon-btn" data-act="edit" data-id="${it.id}" title="編輯" aria-label="編輯">${ICON.edit}</button>
+    <button class="icon-btn" data-act="del" data-id="${it.id}" title="刪除" aria-label="刪除">${ICON.trash}</button>`;
+  const acts = done
+    ? `<button class="btn sm" data-act="restore" data-id="${it.id}">移回清單</button>${tools}`
+    : `<button class="btn sm ${s === 'unlocked' ? 'primary' : ''}" data-act="buy" data-id="${it.id}" ${s === 'cooling' ? 'disabled' : ''}>${s === 'cooling' ? ICON.lock + ' 冷靜中' : '確定購買'}</button>
+       <button class="btn sm" data-act="postpone" data-id="${it.id}">延後</button>
+       <button class="btn sm" data-act="abandon" data-id="${it.id}">放棄</button>${tools}`;
+
+  return `<article class="item ${t.cls}${done ? ' done' : ''}">
+    <div class="item-top"><span class="badge">${t.sign} ${t.label} · ${tierDays(t)}</span><span class="prio" title="重要順序">${esc(prioName(it.priorityId))}</span></div>
+    <h3>${esc(it.name)}</h3>
+    <div class="amount">${fmt(it.amount)}</div>
+    <div class="meta"><span>${esc(catName(it.categoryId))}</span><span>${fmtMD(it.startAt)} 加入</span>${extra > 0 ? `<span>已延後 ${extra} 天</span>` : ''}${fest ? `<span class="tag">${esc(fest)}</span>` : ''}</div>
+    ${done ? '' : `<div class="track"><i style="width:${s === 'unlocked' ? 100 : (progressOf(it) * 100).toFixed(1)}%"></i></div>`}
+    <div class="cd">${status}</div>
+    ${facts && !done ? `<div class="facts">${facts}</div>` : ''}
+    ${it.note ? `<div class="note">${esc(it.note)}</div>` : ''}
+    ${link ? `<a class="link-out" href="${esc(link)}" target="_blank" rel="noopener noreferrer">↗ ${esc(hostOf(link))}</a>` : ''}
+    <div class="actions">${acts}</div>
+  </article>`;
+}
+
+/* ---------- 日曆 ---------- */
+function renderCalendar(){
+  const td0 = new Date();
+  if (S.ui.calY == null) { S.ui.calY = td0.getFullYear(); S.ui.calM = td0.getMonth(); }
+  const y = S.ui.calY, m = S.ui.calM;
+  const lead = new Date(y, m, 1).getDay(), dim = new Date(y, m + 1, 0).getDate();
+  const cells = Math.ceil((lead + dim) / 7) * 7;
+  const fm = festMap([y - 1, y, y + 1]);
+  const starts = {}, unlocks = {};
+  for (const it of S.items) {
+    if (!isActive(it)) continue;
+    (starts[ymd(it.startAt)] ??= []).push(it);
+    (unlocks[ymd(unlockAt(it))] ??= []).push(it);
+  }
+  const todayK = ymd(now());
+  let grid = ['日','一','二','三','四','五','六'].map(w => `<div class="cal-wd">${w}</div>`).join('');
+  for (let i = 0; i < cells; i++) {
+    const dt = new Date(y, m, 1 - lead + i), k = ymd(dt), out = dt.getMonth() !== m;
+    const chips = [...(starts[k] || []).map(it => ({ it, type:'start' })), ...(unlocks[k] || []).map(it => ({ it, type:'unlock' }))];
+    const shown = chips.slice(0, 3), more = chips.length - shown.length;
+    grid += `<div class="cal-cell${out ? ' out' : ''}${k === todayK ? ' today' : ''}${fm[k] ? ' has-fest' : ''}" data-act="cal-day" data-date="${k}" data-drop="${k}">
+      <div class="cal-head"><span class="cal-num">${dt.getDate()}</span>${fm[k] ? `<span class="fest" title="${esc(fm[k].join('、'))}">${esc(fm[k][0])}</span>` : ''}</div>
+      ${shown.map(({ it, type }) => chipHtml(it, type)).join('')}
+      ${more > 0 ? `<button class="more" data-act="cal-more" data-date="${k}">＋${more} 項</button>` : ''}
+    </div>`;
+  }
+
+  const t0 = sod(now());
+  const drill = upcomingFests(3).map(({ f, d }) => {
+    const left = Math.round((d - t0) / DAY);
+    return `<div class="drill-item">
+      <div class="drill-title"><b>${esc(f.name)}</b><span>${fmtMD(d)} · ${left === 0 ? '就是今天' : `還有 ${left} 天`}</span></div>
+      ${TIERS.map(t => { const dl = d - t.days * DAY, late = dl < t0;
+        return `<div class="drill-row ${t.cls}${late ? ' late' : ''}"><span><i class="dot"></i>${t.sign} ${t.label}・${tierDays(t)}</span><span>${late ? '已來不及' : '最晚 ' + fmtMD(dl)}</span></div>`; }).join('')}
+    </div>`;
+  }).join('');
+
+  view.innerHTML = `<div class="cal-wrap">
+    <section class="panel">
+      <div class="cal-nav">
+        <h2>${y} 年 ${m + 1} 月</h2>
+        <button class="btn sm" data-act="cal-today">今天</button>
+        <button class="icon-btn" data-act="cal-prev" aria-label="上個月">${ICON.left}</button>
+        <button class="icon-btn" data-act="cal-next" aria-label="下個月">${ICON.right}</button>
+      </div>
+      <div class="cal-grid">${grid}</div>
+      <p class="desc" style="margin-top:10px">點日期即可在該日新增慾望；把實心標籤拖到別天，可調整冷靜期起點。</p>
+    </section>
+    <aside class="stack">
+      <section class="panel">
+        <h3>購物節冷靜期演練</h3>
+        <p class="desc">想在購物節當天下單？依金額區間，最晚要在這些日期前加入清單，才能剛好解鎖。</p>
+        ${drill}
+      </section>
+      <section class="panel">
+        <h3>圖例</h3>
+        <div class="legend-row"><span class="chip start t-amber">品項</span>冷靜期起點（可拖曳）</div>
+        <div class="legend-row"><span class="chip unlock t-amber">品項</span>解鎖日</div>
+        ${TIERS.map(t => `<div class="legend-row ${t.cls}"><i class="dot"></i>${t.sign} ${t.label}　${t.max === Infinity ? '30,001 以上' : '≤ ' + t.max.toLocaleString('zh-TW')}　${tierDays(t)}</div>`).join('')}
+      </section>
+    </aside>
+  </div>`;
+}
+function chipHtml(it, type){
+  const t = tierOf(it.amount);
+  const drag = type === 'start' && stateOf(it) === 'cooling';
+  return `<div class="chip ${t.cls} ${type}" data-act="edit" data-id="${it.id}" ${drag ? `draggable="true" data-drag="${it.id}"` : ''}
+    title="${esc(it.name)} · ${fmt(it.amount)} · ${type === 'unlock' ? '解鎖日' : '冷靜期起點'}">${type === 'unlock' ? '解鎖 ' : ''}${esc(it.name)}</div>`;
+}
+function shiftMonth(n){
+  let m = S.ui.calM + n, y = S.ui.calY;
+  while (m < 0) { m += 12; y--; } while (m > 11) { m -= 12; y++; }
+  S.ui.calY = y; S.ui.calM = m; touch(); render();
+}
+function openDay(k){
+  const list = S.items.filter(it => isActive(it) && (ymd(it.startAt) === k || ymd(unlockAt(it)) === k));
+  openModal(`<div class="modal sm" role="dialog" aria-modal="true">
+    <header><h2>${fmtMD(parseYmd(k))} 的項目</h2><button class="icon-btn" data-act="modal-close" aria-label="關閉">${ICON.close}</button></header>
+    <div class="modal-body">${list.map(it => `<button class="day-row ${tierOf(it.amount).cls}" data-act="edit" data-id="${it.id}"><i class="dot"></i><span>${esc(it.name)}</span><small>${ymd(it.startAt) === k ? '冷靜期起點' : '解鎖日'} · ${fmt(it.amount)}</small></button>`).join('')}</div>
+    <footer><span class="hint"></span><button class="btn primary" data-act="cal-add" data-date="${k}">在這天新增</button></footer>
+  </div>`);
+}
+
+/* 拖拽：調整冷靜期起點 */
+document.addEventListener('dragstart', e => {
+  const el = e.target.closest?.('[data-drag]'); if (!el) return;
+  e.dataTransfer.setData('text/plain', el.dataset.drag); e.dataTransfer.effectAllowed = 'move';
+});
+document.addEventListener('dragover', e => {
+  const c = e.target.closest?.('[data-drop]'); if (!c) return;
+  e.preventDefault();
+  document.querySelectorAll('.cal-cell.drop').forEach(x => x !== c && x.classList.remove('drop'));
+  c.classList.add('drop');
+});
+document.addEventListener('dragleave', e => {
+  const c = e.target.closest?.('[data-drop]');
+  if (c && !c.contains(e.relatedTarget)) c.classList.remove('drop');
+});
+document.addEventListener('drop', e => {
+  const c = e.target.closest?.('[data-drop]'); if (!c || !S) return;
+  e.preventDefault(); c.classList.remove('drop');
+  const it = getItem(e.dataTransfer.getData('text/plain')); if (!it) return;
+  const k = c.dataset.drop; if (k === ymd(it.startAt)) return;
+  const old = new Date(it.startAt), nd = new Date(parseYmd(k));
+  nd.setHours(old.getHours(), old.getMinutes(), 0, 0);
+  it.startAt = nd.getTime(); it.updatedAt = now();
+  touch(); render();
+  toast(`「${it.name}」的冷靜期起點移到 ${fmtMD(it.startAt)}，${fmtDT(unlockAt(it))} 解鎖`);
+});
+
+/* ---------- 甘特圖 + 儲蓄量表 ---------- */
+function renderGantt(){
+  const st = S.settings;
+  const num = (k, label) => `<label class="f">${label}<input type="number" min="0" step="100" inputmode="numeric" data-bind="${k}" value="${esc(st[k])}"></label>`;
+  view.innerHTML = `<div class="stack">
+    <section class="panel" id="gantt-dyn"></section>
+    <section class="panel">
+      <div class="panel-head"><h2>儲蓄量表</h2><span class="desc">修改數字會即時重算並自動儲存</span></div>
+      <div class="kv">
+        ${num('savingsPool','目前儲蓄池 (NTD)')}
+        ${num('savingsGoal','儲蓄目標 (NTD)')}
+        ${num('monthlySaving','每月可存 (NTD)')}
+        ${num('hourlyWage','時薪（換算工時）')}
+      </div>
+      <div id="budget-dyn"></div>
+    </section>
+  </div>`;
+  renderGanttDyn();
+}
+let dynTimer;
+const debounceDyn = () => { clearTimeout(dynTimer); dynTimer = setTimeout(renderGanttDyn, 250); };
+
+function renderGanttDyn(){
+  const gEl = $('#gantt-dyn'), bEl = $('#budget-dyn'); if (!gEl || !bEl) return;
+  const st = S.settings;
+  const act = S.items.filter(isActive).sort((a, b) => unlockAt(a) - unlockAt(b));
+  const pool = Number(st.savingsPool) || 0, goal = Number(st.savingsGoal) || 0, daily = dailySaving();
+  const t0 = sod(now());
+
+  /* 時間軸範圍 */
+  let lo = t0 - 2 * DAY, hi = t0 + 14 * DAY;
+  for (const i of act) { lo = Math.min(lo, sod(i.startAt)); hi = Math.max(hi, sod(unlockAt(i)) + DAY); }
+  hi += DAY;
+  const span = hi - lo, days = Math.round(span / DAY);
+  const P = t => (t - lo) / span * 100;
+  const step = days <= 18 ? 2 : days <= 36 ? 4 : days <= 70 ? 7 : 14;
+  let ticks = '', lines = '';
+  for (let k = 0; k <= days; k += step) {
+    const t = lo + k * DAY;
+    ticks += `<span class="g-tick" style="left:${P(t)}%">${fmtMD(t)}</span>`;
+    lines += `<i class="g-grid" style="left:${P(t)}%"></i>`;
+  }
+  const todayX = P(now());
+
+  const rows = act.map(it => {
+    const t = tierOf(it.amount), s = stateOf(it), ua = unlockAt(it);
+    const L = P(it.startAt), W = Math.max(1, P(ua) - L);
+    const label = s === 'unlocked' ? '已解鎖（可購買）'
+      : it.startAt > now() ? `${fmtMD(it.startAt)} 開始` : `冷靜期中（剩餘 ${remainShort(ua - now())}）`;
+    const pos = W >= 26 ? 'in' : (L + W < 70 ? 'after' : 'before');
+    const outStyle = pos === 'after' ? `left:calc(${L + W}% + 6px)` : `right:calc(${100 - L}% + 6px)`;
+    const sub = [fmt(it.amount), daily > 0 ? `延後目標 ${n1(it.amount / daily)} 天` : ''].filter(Boolean).join(' · ');
+    return `<div class="g-row">
+      <div class="g-label" data-act="edit" data-id="${it.id}" title="${esc(it.name)}"><b>${esc(it.name)}</b><span>${sub}</span></div>
+      <div class="g-track">${lines}
+        <div class="g-bar ${t.cls} ${s}" style="left:${L}%;width:${W}%" title="${esc(it.name)}：${fmtDT(it.startAt)} → ${fmtDT(ua)}">
+          <i class="g-fill" style="width:${s === 'unlocked' ? 100 : (progressOf(it) * 100).toFixed(1)}%"></i>${pos === 'in' ? `<span class="g-text">${label}</span>` : ''}
+        </div>
+        ${pos !== 'in' ? `<span class="g-text out ${t.cls}" style="${outStyle}">${label}</span>` : ''}
+        <i class="g-today" style="left:${todayX}%"></i>
+      </div>
+    </div>`;
+  }).join('');
+
+  gEl.innerHTML = `<div class="panel-head"><h2>慾望冷靜甘特圖</h2><span class="pool">當前儲蓄池　<b>${fmt(pool)}</b></span></div>
+    ${act.length ? `
+      <div class="g-axis"><div class="g-label"></div><div class="g-track">${ticks}<span class="g-today-label" style="left:${todayX}%">今天</span></div></div>
+      ${rows}` : `<div class="g-empty">目前沒有冷靜中的品項。</div>`}`;
+
+  /* 預算佔用率 */
+  const pending = sum(act);
+  const ratio = pool > 0 ? pending / pool : (pending > 0 ? Infinity : 0);
+  const over = ratio > 1;
+  const pctText = ratio === Infinity ? '儲蓄池為 0' : over ? `超出預算池 ${((ratio - 1) * 100).toFixed(1)}%` : `${(ratio * 100).toFixed(1)}%`;
+
+  /* 目標推算 */
+  let goalMain = '—', goalSub = '';
+  if (goal <= 0) { goalMain = '未設定'; goalSub = '在上方填入儲蓄目標'; }
+  else if (pool >= goal) { goalMain = '已達成'; goalSub = `目標 ${fmt(goal)}`; }
+  else if (daily <= 0) { goalMain = '—'; goalSub = '填入每月可存金額即可推算'; }
+  else { const d1 = Math.ceil((goal - pool) / daily); goalMain = `${d1} 天後`; goalSub = `約 ${fmtMD(t0 + d1 * DAY)} 達成 ${fmt(goal)}`; }
+  const delay = daily > 0 ? pending / daily : 0;
+  const goalPct = goal > 0 ? Math.min(100, pool / goal * 100) : 0;
+
+  bEl.innerHTML = `<div class="budget">
+      <div class="budget-top"><span>衝動預算總額佔用率</span><b class="${over ? 'over' : ''}">${pctText}</b></div>
+      <div class="bar ${over ? 'over' : ''}"><i style="width:${Math.min(100, ratio === Infinity ? 100 : ratio * 100)}%"></i></div>
+      <p class="desc">冷靜中與已解鎖品項合計 ${fmt(pending)}，儲蓄池 ${fmt(pool)}。</p>
+    </div>
+    <div class="goal-grid">
+      <div class="mini"><small>儲蓄目標進度</small><b>${goal > 0 ? goalPct.toFixed(0) + '%' : '—'}</b><div class="bar" style="height:6px;margin-top:6px"><i style="width:${goalPct}%"></i></div></div>
+      <div class="mini"><small>照目前速度達成目標</small><b>${goalMain}</b><p>${goalSub}</p></div>
+      <div class="mini"><small>若清單全部買下</small><b>${daily > 0 ? `延後 ${n1(delay)} 天` : '—'}</b><p>${daily > 0 ? `等於 ${n1(delay / 30)} 個月的存款` : '填入每月可存金額即可推算'}</p></div>
+    </div>`;
+}
+
+/* ---------- 設定 ---------- */
+function renderSettings(){
+  const st = S.settings;
+  const cc = {}, pc = {};
+  S.items.forEach(i => { cc[i.categoryId] = (cc[i.categoryId] || 0) + 1; pc[i.priorityId] = (pc[i.priorityId] || 0) + 1; });
+  const num = (k, label) => `<label class="f">${label}<input type="number" min="0" step="100" inputmode="numeric" data-bind="${k}" value="${esc(st[k])}"></label>`;
+
+  view.innerHTML = `<div class="settings">
+    <section class="panel">
+      <h2>分類管理</h2>
+      <p class="desc">預設 20 種分類，可直接改名、新增或刪除。刪除時，該分類下的品項會移到「雜項支出」。</p>
+      <div class="list-edit">${S.categories.map(c => `<div class="le-row">
+        <input type="text" value="${esc(c.name)}" data-rename="cat" data-id="${c.id}" aria-label="分類名稱">
+        <span class="count">${cc[c.id] || 0} 項</span>
+        <button class="icon-btn" data-act="cat-del" data-id="${c.id}" title="刪除" aria-label="刪除">${ICON.close}</button></div>`).join('')}</div>
+      <div class="add-row"><input type="text" id="cat-new" placeholder="新增分類名稱"><button class="btn sm" data-act="cat-add">新增</button></div>
+      <div class="row-actions"><button class="btn ghost sm" data-act="cat-restore">補回缺少的預設分類</button></div>
+    </section>
+
+    <div class="stack">
+      <section class="panel">
+        <h2>重要順序</h2>
+        <p class="desc">由上到下代表越重要（沿用你試算表的 B > M > H），可改名、調整順序或新增。</p>
+        <div class="list-edit">${S.priorities.map((p, i) => `<div class="le-row">
+          <span class="order">${i + 1}</span>
+          <input type="text" value="${esc(p.name)}" data-rename="prio" data-id="${p.id}" aria-label="順序名稱">
+          <span class="count">${pc[p.id] || 0} 項</span>
+          <button class="icon-btn" data-act="prio-up" data-id="${p.id}" ${i === 0 ? 'disabled' : ''} aria-label="上移">${ICON.up}</button>
+          <button class="icon-btn" data-act="prio-down" data-id="${p.id}" ${i === S.priorities.length - 1 ? 'disabled' : ''} aria-label="下移">${ICON.down}</button>
+          <button class="icon-btn" data-act="prio-del" data-id="${p.id}" aria-label="刪除">${ICON.close}</button></div>`).join('')}</div>
+        <div class="add-row"><input type="text" id="prio-new" placeholder="新增順序，例如 P0"><button class="btn sm" data-act="prio-add">新增</button></div>
+      </section>
+
+      <section class="panel">
+        <h2>儲蓄與換算</h2>
+        <p class="desc">用來計算工時換算、儲蓄目標延後天數與甘特圖的預算佔用率。</p>
+        <div class="kv" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+          ${num('savingsPool','目前儲蓄池 (NTD)')}${num('savingsGoal','儲蓄目標 (NTD)')}${num('monthlySaving','每月可存 (NTD)')}${num('hourlyWage','時薪')}
+        </div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>購物節</h2>
+      <p class="desc">標記在日曆上，並用於「冷靜期演練」。可改名、改日期、刪除或新增。</p>
+      <div class="list-edit">${S.festivals.map(f => `<div class="le-row">
+        <input type="text" value="${esc(f.name)}" data-rename="fest" data-id="${f.id}" aria-label="購物節名稱">
+        ${f.rule === 'blackfriday' ? `<span class="rule">11 月第 4 個週四隔天</span>` :
+          `<input class="num" type="number" min="1" max="12" value="${f.m}" data-rename="fest" data-field="m" data-id="${f.id}" aria-label="月"><input class="num" type="number" min="1" max="31" value="${f.d}" data-rename="fest" data-field="d" data-id="${f.id}" aria-label="日">`}
+        <button class="icon-btn" data-act="fest-del" data-id="${f.id}" aria-label="刪除">${ICON.close}</button></div>`).join('')}</div>
+      <div class="add-row"><input type="text" id="fest-name" placeholder="名稱，例如 週年慶"><input class="num" type="number" id="fest-m" min="1" max="12" placeholder="月"><input class="num" type="number" id="fest-d" min="1" max="31" placeholder="日"><button class="btn sm" data-act="fest-add">新增</button></div>
+    </section>
+
+    <div class="stack">
+      <section class="panel">
+        <h2>外觀與安全</h2>
+        <p class="desc" style="margin-top:4px">強調色</p>
+        <div class="swatches">
+          <button class="sw ${st.accent !== 'slate' ? 'on' : ''}" data-act="accent" data-v="sage"><i style="background:#78866B"></i>Sage Green</button>
+          <button class="sw ${st.accent === 'slate' ? 'on' : ''}" data-act="accent" data-v="slate"><i style="background:#64748B"></i>Slate Blue</button>
+        </div>
+        <div class="field-row"><span>閒置自動鎖定</span>
+          <select data-bind="autoLockMin" data-num="1">${[[0,'不自動鎖定'],[5,'5 分鐘'],[15,'15 分鐘'],[30,'30 分鐘'],[60,'1 小時']].map(([v,l]) => `<option value="${v}" ${Number(st.autoLockMin) === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+        <div class="field-row"><span>主密碼</span><span style="display:flex;gap:6px"><button class="btn sm" data-act="change-pw">變更主密碼</button><button class="btn sm" data-act="lock">立即鎖定</button></span></div>
+      </section>
+
+      <section class="panel">
+        <h2>資料備份與匯入</h2>
+        <p class="desc">資料只存在這個瀏覽器。換裝置或清除瀏覽資料前，請先匯出備份。</p>
+        <div class="row-actions">
+          <button class="btn sm" data-act="export-enc">匯出加密備份</button>
+          <button class="btn sm" data-act="export-plain">匯出明文 JSON</button>
+          <button class="btn sm" data-act="import-json">匯入備份</button>
+        </div>
+        <div class="zone" style="border-top-style:solid;border-color:var(--line)">
+          <h3 style="color:var(--text)">從 Excel 匯入</h3>
+          <p class="desc">在 Excel 選「另存新檔 → CSV UTF-8」。會自動辨識「類別、項目、金額、重要順序、商品連結」等欄位，冷靜期從匯入當下開始計算。</p>
+          <div class="row-actions"><button class="btn sm" data-act="import-csv">選擇 CSV 檔</button></div>
+        </div>
+        <div class="zone">
+          <h3>危險區</h3>
+          <div class="row-actions">
+            <button class="btn sm danger" data-act="wipe-items">清空所有慾望品項</button>
+            <button class="btn sm danger" data-act="reset-all">清除全部資料與主密碼</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>`;
+}
+
+/* =====================================================================
+ * 9. Modal 系統
+ * ===================================================================== */
+let modalKind = null, dialogResolve = null;
+function openModal(html, kind = 'generic'){
+  if (dialogResolve) { const r = dialogResolve; dialogResolve = null; r(null); }
+  $('#modal-root').innerHTML = `<div class="overlay" data-overlay>${html}</div>`;
+  modalKind = kind;
+  const f = $('#modal-root [autofocus]'); if (f) f.focus({ preventScroll:true });
+}
+function closeModal(){
+  if (modalKind === 'item' && S?.draft) { S.draft = null; touch(); }
+  $('#modal-root').innerHTML = ''; modalKind = null;
+  if (dialogResolve) { const r = dialogResolve; dialogResolve = null; r(null); }
+}
+function dialog({ title, body = '', fields = [], ok = '確定', cancel = '取消', danger = false }){
+  return new Promise(res => {
+    openModal(`<div class="modal sm" role="dialog" aria-modal="true">
+      <header><h2>${esc(title)}</h2></header>
+      <form class="modal-body" id="dlg-form">${body}
+        ${fields.map((f, i) => `<label class="f">${esc(f.label)}<input type="${f.type || 'text'}" name="${f.name}" value="${esc(f.value || '')}" ${i === 0 ? 'autofocus' : ''}></label>`).join('')}
+      </form>
+      <footer><span class="hint"></span>${cancel ? `<button class="btn ghost" type="button" data-act="dlg-cancel">${cancel}</button>` : ''}<button class="btn ${danger ? 'danger-solid' : 'primary'}" type="button" data-act="dlg-ok">${ok}</button></footer>
+    </div>`, 'dialog');
+    dialogResolve = res;
+  });
+}
+function dlgOk(){
+  const form = $('#dlg-form'); let val = true;
+  if (form) { const inputs = [...form.querySelectorAll('input[name]')]; if (inputs.length) { val = {}; inputs.forEach(i => val[i.name] = i.value); } }
+  const r = dialogResolve; dialogResolve = null;
+  $('#modal-root').innerHTML = ''; modalKind = null;
+  r && r(val);
+}
+
+/* ---------- 新增 / 編輯（草稿即時自動儲存） ---------- */
+function openItemModal(seed){
+  if (seed.itemId) {
+    const it = getItem(seed.itemId); if (!it) return;
+    S.draft = { mode:'edit', itemId:it.id, data:{
+      name:it.name, amount:String(it.amount), categoryId:it.categoryId, priorityId:it.priorityId,
+      link:it.link || '', note:it.note || '', festival:it.festival || '', startDate:ymd(it.startAt), reflections:{ ...(it.reflections || {}) } } };
+  } else {
+    const cat = S.categories.find(c => c.id === S.ui.lastCat) || S.categories[0];
+    const pr = S.priorities[Math.floor((S.priorities.length - 1) / 2)] || S.priorities[0];
+    S.draft = { mode:'new', data:{ name:'', amount:'', categoryId:cat.id, priorityId:pr.id, link:'', note:'', festival:'', startDate:seed.startDate || ymd(now()), reflections:{} } };
+  }
+  touch();
+  renderItemModal();
+}
+function renderItemModal(){
+  const d = S.draft.data, edit = S.draft.mode === 'edit';
+  const catOpts = S.categories.map(c => `<option value="${c.id}" ${c.id === d.categoryId ? 'selected' : ''}>${esc(c.name)}</option>`).join('') + `<option value="__new">＋ 新增分類…</option>`;
+  const prOpts = S.priorities.map(p => `<option value="${p.id}" ${p.id === d.priorityId ? 'selected' : ''}>${esc(p.name)}</option>`).join('');
+  const fOpts = `<option value="">無</option>` + S.festivals.map(f => `<option value="${f.id}" ${f.id === d.festival ? 'selected' : ''}>${esc(f.name)}</option>`).join('');
+  openModal(`<div class="modal" role="dialog" aria-modal="true">
+    <header><h2>${edit ? '編輯慾望' : '新增慾望'}</h2><button class="icon-btn" data-act="modal-close" aria-label="關閉">${ICON.close}</button></header>
+    <div class="modal-body">
+      <label class="f">品項名稱<input type="text" data-draft="name" value="${esc(d.name)}" placeholder="例如：爬行機" ${edit ? '' : 'autofocus'}></label>
+      <div class="row2">
+        <label class="f">金額 (NTD)<input type="number" inputmode="numeric" min="0" step="1" data-draft="amount" value="${esc(d.amount)}" placeholder="0"></label>
+        <label class="f">冷靜期起點<input type="date" data-draft="startDate" value="${esc(d.startDate)}"></label>
+      </div>
+      <div id="tier-preview"></div>
+      <div class="row2">
+        <label class="f">分類<select data-draft="categoryId">${catOpts}</select></label>
+        <label class="f">重要順序<select data-draft="priorityId">${prOpts}</select></label>
+      </div>
+      <div class="newcat" id="newcat" hidden><input type="text" id="newcat-name" placeholder="新分類名稱"><button class="btn sm" type="button" data-act="newcat-add">加入</button></div>
+      <div class="row2">
+        <label class="f">購物節標籤<select data-draft="festival">${fOpts}</select></label>
+        <label class="f">商品連結<input type="url" data-draft="link" value="${esc(d.link)}" placeholder="https://"></label>
+      </div>
+      <label class="f">為什麼想要它？<textarea rows="2" data-draft="note" placeholder="寫下此刻的理由，冷靜期結束後回來看看">${esc(d.note)}</textarea></label>
+      <div id="reflect-box"></div>
+    </div>
+    <footer><span class="hint" id="draft-hint">輸入內容會自動暫存</span><button class="btn ghost" type="button" data-act="modal-close">取消</button><button class="btn primary" type="button" data-act="draft-save">${edit ? '儲存變更' : '加入冷靜期'}</button></footer>
+  </div>`, 'item');
+  updateTierPreview();
+}
+function updateTierPreview(){
+  const el = $('#tier-preview'); if (!el || !S.draft) return;
+  const d = S.draft.data, a = Number(d.amount);
+  if (d.amount === '' || !(a >= 0)) {
+    el.innerHTML = `<div class="preview neutral">輸入金額後，系統會自動決定冷靜期長度。</div>`;
+    if (el.dataset.tier !== '') { el.dataset.tier = ''; renderReflect(); }
+    return;
+  }
+  const t = tierOf(a);
+  const it = S.draft.itemId ? getItem(S.draft.itemId) : null;
+  const extra = it ? Number(it.extraDays) || 0 : 0;
+  const ua = computeStart(d.startDate, it) + (t.days + extra) * DAY;
+  const facts = factsOf(a);
+  el.innerHTML = `<div class="preview ${t.cls}"><b>${t.sign} ${t.label}</b>　冷靜期 ${tierDays(t)}${extra ? `（另延後 ${Math.round(extra)} 天）` : ''} · 預計 ${fmtDT(ua)} 解鎖${facts ? `<br>${facts}` : ''}</div>`;
+  if (el.dataset.tier !== t.key) { el.dataset.tier = t.key; renderReflect(); }
+}
+function renderReflect(){
+  const box = $('#reflect-box'); if (!box || !S.draft) return;
+  const d = S.draft.data, a = Number(d.amount);
+  if (d.amount === '' || !(a >= 0)) { box.innerHTML = ''; return; }
+  const t = tierOf(a);
+  box.innerHTML = `<div class="reflect ${t.cls}"><h4>反思問答 · ${t.sign} ${t.label}</h4>
+    <p class="desc">現在可以先寫；冷靜期結束、確定購買前必須完成。</p>
+    ${t.questions.map((q, i) => `<label class="f">${esc(q)}<textarea rows="2" data-reflect="${i}">${esc(d.reflections?.[q] || '')}</textarea></label>`).join('')}</div>`;
+}
+function addNewCatInModal(){
+  const inp = $('#newcat-name'); const name = (inp?.value || '').trim();
+  if (!name) { inp?.focus(); return; }
+  let c = S.categories.find(x => x.name === name);
+  if (!c) { c = { id:uid(), name }; S.categories.push(c); }
+  S.draft.data.categoryId = c.id; touch();
+  const sel = $('[data-draft="categoryId"]');
+  sel.innerHTML = S.categories.map(x => `<option value="${x.id}" ${x.id === c.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('') + `<option value="__new">＋ 新增分類…</option>`;
+  $('#newcat').hidden = true; inp.value = '';
+  toast(`已新增分類「${name}」`);
+}
+function saveDraft(){
+  const dr = S.draft; if (!dr) return;
+  const d = dr.data, name = String(d.name || '').trim(), amount = Number(d.amount);
+  if (!name) { toast('請輸入品項名稱'); $('[data-draft="name"]')?.focus(); return; }
+  if (d.amount === '' || !(amount >= 0)) { toast('請輸入有效的金額'); $('[data-draft="amount"]')?.focus(); return; }
+  const catId = S.categories.some(c => c.id === d.categoryId) ? d.categoryId : S.categories[0].id;
+  const fields = { name, amount:Math.round(amount), categoryId:catId, priorityId:d.priorityId, link:String(d.link || '').trim(),
+    note:d.note || '', festival:d.festival || '', reflections:{ ...(d.reflections || {}) } };
+  if (dr.mode === 'edit' && getItem(dr.itemId)) {
+    const it = getItem(dr.itemId);
+    Object.assign(it, fields, { startAt:computeStart(d.startDate, it), updatedAt:now() });
+    toast('已更新');
+  } else {
+    const startAt = computeStart(d.startDate, null);
+    const it = { id:uid(), ...fields, startAt, extraDays:0, status:'active', createdAt:now(), updatedAt:now() };
+    S.items.push(it);
+    toast(`已加入冷靜期，${fmtDT(unlockAt(it))} 解鎖`);
+  }
+  S.ui.lastCat = catId;
+  S.draft = null; $('#modal-root').innerHTML = ''; modalKind = null;
+  touch(); render();
+}
+
+/* ---------- 確定購買（強制反思） ---------- */
+function openBuy(id){
+  const it = getItem(id); if (!it) return;
+  if (stateOf(it) !== 'unlocked') { toast('還在冷靜期中，再等等'); return; }
+  const t = tierOf(it.amount), pool = Number(S.settings.savingsPool) || 0;
+  openModal(`<div class="modal" role="dialog" aria-modal="true">
+    <header><h2>確定購買</h2><button class="icon-btn" data-act="modal-close" aria-label="關閉">${ICON.close}</button></header>
+    <div class="modal-body">
+      <div class="buy-head ${t.cls}"><span class="badge">${t.sign} ${t.label} · 冷靜了 ${remainShort(now() - it.startAt)}</span><b>${esc(it.name)}</b><span class="amount">${fmt(it.amount)}</span></div>
+      ${it.note ? `<div class="quote"><small>${fmtMD(it.startAt)} 你寫下的理由</small>${esc(it.note)}</div>` : ''}
+      <div class="reflect"><h4>購買前的最後反思</h4>
+        ${t.questions.map((q, i) => `<label class="f">${esc(q)}<textarea rows="2" data-buyq="${i}" data-id="${it.id}">${esc(it.reflections?.[q] || '')}</textarea></label>`).join('')}
+      </div>
+      <label class="check"><input type="checkbox" id="buy-deduct" ${pool > 0 ? 'checked' : ''}><span>從儲蓄池扣除 ${fmt(it.amount)}（目前 ${fmt(pool)}）</span></label>
+      <label class="check"><input type="checkbox" id="buy-sure"><span>冷靜期過後我仍然需要它，這不是一時衝動。</span></label>
+      <p class="err" id="buy-err" style="margin:0"></p>
+    </div>
+    <footer><span class="hint">反思內容會自動儲存</span><button class="btn ghost" type="button" data-act="modal-close">再想想</button><button class="btn primary" type="button" data-act="buy-confirm" data-id="${it.id}">確定購買</button></footer>
+  </div>`, 'buy');
+}
+function confirmBuy(id){
+  const it = getItem(id); if (!it) return;
+  const t = tierOf(it.amount), err = $('#buy-err');
+  const missing = t.questions.some(q => !String(it.reflections?.[q] || '').trim());
+  if (missing) { err.textContent = '請先回答所有反思問題。'; return; }
+  if (!$('#buy-sure').checked) { err.textContent = '請勾選最後一項確認。'; return; }
+  if ($('#buy-deduct').checked) { S.settings.savingsPool = (Number(S.settings.savingsPool) || 0) - it.amount; it.deducted = true; }
+  it.status = 'purchased'; it.decidedAt = now(); it.updatedAt = now();
+  $('#modal-root').innerHTML = ''; modalKind = null;
+  touch(); render(); toast('已記錄購買，好好使用它');
+}
+
+/* ---------- 延後 / 放棄 / 移回 / 刪除 ---------- */
+function openPostpone(id){
+  const it = getItem(id); if (!it) return;
+  const extra = Math.round(Number(it.extraDays) || 0);
+  openModal(`<div class="modal sm" role="dialog" aria-modal="true">
+    <header><h2>延後冷靜期</h2><button class="icon-btn" data-act="modal-close" aria-label="關閉">${ICON.close}</button></header>
+    <div class="modal-body">
+      <p>「${esc(it.name)}」${stateOf(it) === 'unlocked' ? '已解鎖' : `預計 ${fmtDT(unlockAt(it))} 解鎖`}。再給自己一點時間：</p>
+      <div class="pp-grid">${[1,3,7,14].map(n => `<button class="btn" data-act="postpone-do" data-id="${id}" data-days="${n}">＋${n} 天</button>`).join('')}</div>
+      ${extra > 0 ? `<button class="btn ghost sm" data-act="postpone-do" data-id="${id}" data-days="0">取消延後（目前已延後 ${extra} 天）</button>` : ''}
+    </div>
+  </div>`);
+}
+function doPostpone(id, n){
+  const it = getItem(id); if (!it) return;
+  const base = tierOf(it.amount).days;
+  if (n === 0) it.extraDays = 0;
+  else {
+    const target = Math.max(unlockAt(it), now()) + n * DAY;
+    it.extraDays = (target - it.startAt) / DAY - base;
+  }
+  it.updatedAt = now();
+  closeModal(); touch(); render();
+  toast(n ? `已延後，${fmtDT(unlockAt(it))} 解鎖` : '已取消延後');
+}
+async function doAbandon(id){
+  const it = getItem(id); if (!it) return;
+  const ok = await dialog({ title:'放棄這個慾望？', body:`<p>「${esc(it.name)}」${fmt(it.amount)} 會記入「已放棄・省下」。之後仍可從「已放棄」移回清單。</p>`, ok:'放棄它' });
+  if (!ok) return;
+  it.status = 'abandoned'; it.decidedAt = now(); it.updatedAt = now();
+  touch(); render(); toast(`很好，省下了 ${fmt(it.amount)}`);
+}
+async function doRestore(id){
+  const it = getItem(id); if (!it) return;
+  const ok = await dialog({ title:'移回清單，重新冷靜？', body:`<p>「${esc(it.name)}」會從現在重新開始 ${tierDays(tierOf(it.amount))} 的冷靜期。${it.deducted ? `<br>先前從儲蓄池扣除的 ${fmt(it.amount)} 會加回。` : ''}</p>`, ok:'移回清單' });
+  if (!ok) return;
+  if (it.deducted) { S.settings.savingsPool = (Number(S.settings.savingsPool) || 0) + it.amount; it.deducted = false; }
+  Object.assign(it, { status:'active', startAt:now(), extraDays:0, decidedAt:null, updatedAt:now() });
+  touch(); render();
+}
+async function doDelete(id){
+  const it = getItem(id); if (!it) return;
+  const ok = await dialog({ title:'刪除這筆紀錄？', body:`<p>「${esc(it.name)}」會永久刪除，無法復原。</p>`, ok:'刪除', danger:true });
+  if (!ok) return;
+  S.items = S.items.filter(i => i.id !== id);
+  touch(); render(); toast('已刪除');
+}
+
+/* ---------- 分類 / 順序 / 購物節 CRUD ---------- */
+async function delCat(id){
+  if (S.categories.length <= 1) { toast('至少要保留一個分類'); return; }
+  const c = S.categories.find(x => x.id === id); if (!c) return;
+  const n = S.items.filter(i => i.categoryId === id).length;
+  const target = S.categories.find(x => x.name === '雜項支出' && x.id !== id) || S.categories.find(x => x.id !== id);
+  const ok = await dialog({ title:`刪除分類「${c.name}」？`, body: n ? `<p>有 ${n} 個品項使用此分類，會移到「${esc(target.name)}」。</p>` : '<p>此分類目前沒有品項。</p>', ok:'刪除', danger:true });
+  if (!ok) return;
+  S.items.forEach(i => { if (i.categoryId === id) i.categoryId = target.id; });
+  S.categories = S.categories.filter(x => x.id !== id);
+  touch(); render();
+}
+function addCat(){
+  const inp = $('#cat-new'), name = inp.value.trim(); if (!name) { inp.focus(); return; }
+  if (S.categories.some(c => c.name === name)) { toast('已有同名分類'); return; }
+  S.categories.push({ id:uid(), name }); touch(); render(); toast(`已新增「${name}」`);
+}
+function restoreCats(){
+  const miss = DEFAULT_CATS.filter(n => !S.categories.some(c => c.name === n));
+  if (!miss.length) { toast('預設分類都在'); return; }
+  miss.forEach(name => S.categories.push({ id:uid(), name })); touch(); render(); toast(`已補回 ${miss.length} 個分類`);
+}
+function movePrio(id, dir){
+  const i = S.priorities.findIndex(p => p.id === id), j = i + dir;
+  if (i < 0 || j < 0 || j >= S.priorities.length) return;
+  [S.priorities[i], S.priorities[j]] = [S.priorities[j], S.priorities[i]];
+  touch(); render();
+}
+async function delPrio(id){
+  if (S.priorities.length <= 1) { toast('至少要保留一個順序'); return; }
+  const i = S.priorities.findIndex(p => p.id === id); const p = S.priorities[i]; if (!p) return;
+  const target = S.priorities[i + 1] || S.priorities[i - 1];
+  const n = S.items.filter(x => x.priorityId === id).length;
+  const ok = await dialog({ title:`刪除順序「${p.name}」？`, body: n ? `<p>有 ${n} 個品項使用它，會改為「${esc(target.name)}」。</p>` : '<p>目前沒有品項使用它。</p>', ok:'刪除', danger:true });
+  if (!ok) return;
+  S.items.forEach(x => { if (x.priorityId === id) x.priorityId = target.id; });
+  S.priorities.splice(i, 1); touch(); render();
+}
+function addPrio(){
+  const inp = $('#prio-new'), name = inp.value.trim(); if (!name) { inp.focus(); return; }
+  S.priorities.push({ id:uid(), name }); touch(); render();
+}
+function addFest(){
+  const name = $('#fest-name').value.trim(), m = parseInt($('#fest-m').value, 10), d = parseInt($('#fest-d').value, 10);
+  if (!name || !(m >= 1 && m <= 12) || !(d >= 1 && d <= 31)) { toast('請填入名稱與有效的月、日'); return; }
+  S.festivals.push({ id:uid(), name, m, d }); touch(); render(); toast(`已新增「${name}」`);
+}
+function delFest(id){
+  S.festivals = S.festivals.filter(f => f.id !== id);
+  S.items.forEach(i => { if (i.festival === id) i.festival = ''; });
+  touch(); render();
+}
+
+/* ---------- 範例資料（使用者試算表 4 筆） ---------- */
+function loadSample(){
+  const c = n => S.categories.find(x => x.name === n)?.id || S.categories[0].id;
+  const p = n => S.priorities.find(x => x.name === n)?.id || S.priorities[0].id;
+  const t = now();
+  [
+    ['爬行機', 2600, '運動健身', 'M', ''],
+    ['Flextools 建築智慧元件中文版(一年期)', 3900, '教育學習', 'H', 'https://geoinfo.cyberbiz.co/products/flextools'],
+    ['Dibac for SketchUp 空間輔助設計外掛中文版 (獨家中文電子操作手冊)-買斷', 2900, '教育學習', 'H', 'https://geoinfo.cyberbiz.co/products/dibac'],
+    ['Podium Browser standalone 線上精緻圖庫 (一年期)', 3600, '教育學習', 'M', 'https://geoinfo.cyberbiz.co/products/podium-browser'],
+  ].forEach(([name, amount, cat, pr, link]) => S.items.push({
+    id:uid(), name, amount, categoryId:c(cat), priorityId:p(pr), link, note:'', festival:'', reflections:{},
+    startAt:t, extraDays:0, status:'active', createdAt:t, updatedAt:t }));
+  touch(); render(); toast('已載入 4 筆範例');
+}
+
+/* ---------- 匯出 / 匯入 ---------- */
+function download(name, obj){
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type:'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+}
+const stamp = () => ymd(now()).replace(/-/g, '');
+async function exportEnc(){
+  dirty = true; await flush();
+  const v = await readVault();
+  download(`慾望清單-加密備份-${stamp()}.json`, { format:'dms-encrypted', ...v });
+  toast('已匯出加密備份（需主密碼才能還原）');
+}
+async function exportPlain(){
+  const ok = await dialog({ title:'匯出明文 JSON？', body:'<p>明文檔案沒有加密，任何拿到檔案的人都能看到內容。適合轉移到其他工具使用。</p>', ok:'匯出' });
+  if (!ok) return;
+  const data = JSON.parse(JSON.stringify(S)); data.draft = null;
+  download(`慾望清單-明文-${stamp()}.json`, { format:'dms-plain', exportedAt:new Date().toISOString(), data });
+}
+async function importJSON(file){
+  let obj; try { obj = JSON.parse(await file.text()); } catch { toast('無法讀取這個檔案'); return; }
+  let data = null;
+  if (obj?.format === 'dms-encrypted' && obj.ct) {
+    const r = await dialog({ title:'輸入備份的主密碼', body:'<p>這是加密備份，請輸入建立備份時使用的主密碼。</p>', fields:[{ name:'pw', label:'主密碼', type:'password' }], ok:'解密' });
+    if (!r) return;
+    try { const k = await deriveKey(r.pw, unb64(obj.salt), obj.iter); data = await unseal(k, obj); }
+    catch { toast('密碼不正確，無法解密備份'); return; }
+  } else if (obj?.format === 'dms-plain' && obj.data) data = obj.data;
+  else if (Array.isArray(obj?.items)) data = obj;
+  else { toast('這不是慾望清單的備份檔'); return; }
+  const n = (data.items || []).length;
+  const ok = await dialog({ title:'用備份取代目前資料？', body:`<p>備份內有 ${n} 個品項。目前的資料會被取代（主密碼維持不變）。</p>`, ok:'取代', danger:true });
+  if (!ok) return;
+  S = migrate(data); S.draft = null; touch(); render(); toast(`已匯入 ${n} 個品項`);
+}
+
+function parseCSV(text){
+  const rows = []; let row = [], f = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+    else if (c === '"') q = true;
+    else if (c === ',') { row.push(f); f = ''; }
+    else if (c === '\n') { row.push(f); rows.push(row); row = []; f = ''; }
+    else if (c !== '\r') f += c;
+  }
+  if (f || row.length) { row.push(f); rows.push(row); }
+  return rows.filter(r => r.some(x => String(x).trim()));
+}
+async function importCSV(file){
+  const buf = await file.arrayBuffer();
+  let text = new TextDecoder('utf-8').decode(buf);
+  if (text.includes('\uFFFD')) { try { text = new TextDecoder('big5').decode(buf); } catch {} }
+  text = text.replace(/^\uFEFF/, '');
+  const rows = parseCSV(text);
+  const hi = rows.findIndex(r => r.some(c => String(c).includes('金額')));
+  if (hi < 0) { toast('找不到「金額」欄位，請確認 CSV 有標題列'); return; }
+  const H = rows[hi].map(c => String(c).trim().toLowerCase());
+  const col = (...keys) => H.findIndex(h => keys.some(k => h.includes(k)));
+  const ci = col('類別','分類'), ni = col('項目','清單','名稱','品項'), ai = col('金額'), pi = col('重要','順序','優先'), li = col('連結','網址','link','url');
+  if (ni < 0) { toast('找不到品項名稱欄位（項目／名稱）'); return; }
+  const body = rows.slice(hi + 1).filter(r => String(r[ni] || '').trim());
+  if (!body.length) { toast('CSV 裡沒有可匯入的資料列'); return; }
+  const ok = await dialog({ title:`從 CSV 匯入 ${body.length} 筆？`, body:'<p>會新增到現有清單，冷靜期從現在開始計算。找不到對應的分類或重要順序時，會自動新增。</p>', ok:'匯入' });
+  if (!ok) return;
+  const matchCat = raw => {
+    raw = String(raw || '').trim(); if (!raw) return (S.categories.find(c => c.name === '雜項支出') || S.categories[0]).id;
+    const ex = S.categories.find(c => c.name === raw); if (ex) return ex.id;
+    const key = raw.replace(/類$/, '').slice(0, 2);
+    const fz = key && S.categories.find(c => c.name.includes(key)); if (fz) return fz.id;
+    const c = { id:uid(), name:raw }; S.categories.push(c); return c.id;
+  };
+  const matchPrio = raw => {
+    raw = String(raw || '').trim(); if (!raw) return S.priorities[Math.floor((S.priorities.length - 1) / 2)].id;
+    const ex = S.priorities.find(p => p.name.toUpperCase() === raw.toUpperCase()); if (ex) return ex.id;
+    const p = { id:uid(), name:raw }; S.priorities.push(p); return p.id;
+  };
+  const t = now();
+  body.forEach(r => {
+    const name = String(r[ni]).trim().replace(/^\d+\s*[.、)）]\s*/, '');
+    const amount = Math.round(Number(String(ai >= 0 ? r[ai] : '').replace(/[^\d.]/g, '')) || 0);
+    S.items.push({ id:uid(), name, amount, categoryId:matchCat(ci >= 0 ? r[ci] : ''), priorityId:matchPrio(pi >= 0 ? r[pi] : ''),
+      link:safeUrl(li >= 0 ? r[li] : ''), note:'', festival:'', reflections:{}, startAt:t, extraDays:0, status:'active', createdAt:t, updatedAt:t });
+  });
+  touch(); render(); toast(`已匯入 ${body.length} 筆`);
+}
+
+async function wipeItems(){
+  const ok = await dialog({ title:'清空所有慾望品項？', body:`<p>${S.items.length} 個品項會全部刪除（分類與設定保留），無法復原。</p>`, ok:'全部清空', danger:true });
+  if (!ok) return;
+  S.items = []; touch(); render(); toast('已清空');
+}
+async function changePw(){
+  const r = await dialog({ title:'變更主密碼', fields:[
+    { name:'old', label:'目前主密碼', type:'password' },
+    { name:'n1', label:'新主密碼（至少 4 個字元）', type:'password' },
+    { name:'n2', label:'再輸入一次新主密碼', type:'password' } ], ok:'變更' });
+  if (!r) return;
+  try { const k = await deriveKey(r.old, unb64(META.salt), META.iter); await unseal(k, await readVault()); }
+  catch { toast('目前主密碼不正確'); return; }
+  if (r.n1.length < 4) { toast('新主密碼至少 4 個字元'); return; }
+  if (r.n1 !== r.n2) { toast('兩次輸入的新主密碼不一致'); return; }
+  await flush();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  KEY = await deriveKey(r.n1, salt, PBKDF2_ITER);
+  META = { salt:b64(salt), iter:PBKDF2_ITER };
+  dirty = true; await flush();
+  toast('主密碼已變更');
+}
+async function resetAll(){
+  const ok = await dialog({ title:'清除全部資料？', body:'<p>會刪除這個瀏覽器中的所有慾望紀錄與主密碼設定，<b>無法復原</b>。建議先匯出備份。</p>', ok:'繼續', danger:true });
+  if (!ok) return;
+  const r = await dialog({ title:'最後確認', body:'<p>請輸入「清除」兩個字。</p>', fields:[{ name:'c', label:'確認文字' }], ok:'確認清除', danger:true });
+  if (!r || r.c.trim() !== '清除') { toast('已取消'); return; }
+  clearTimeout(saveTimer); dirty = false; await saving;
+  try { await IDB.del('vault'); } catch {}
+  LS.del('dms.vault');
+  KEY = null; S = null; META = null; $('#view').innerHTML = '';
+  await showLock(); toast('已清除，請重新設定主密碼');
+}
+
+/* =====================================================================
+ * 10. 事件委派
+ * ===================================================================== */
+const A = {
+  tab: el => { S.ui.tab = el.dataset.v; touch(); render(); window.scrollTo(0, 0); },
+  add: () => openItemModal({}),
+  edit: (el, id) => openItemModal({ itemId:id }),
+  'cal-day': el => openItemModal({ startDate:el.dataset.date }),
+  'cal-add': el => openItemModal({ startDate:el.dataset.date }),
+  'cal-more': el => openDay(el.dataset.date),
+  'cal-prev': () => shiftMonth(-1),
+  'cal-next': () => shiftMonth(1),
+  'cal-today': () => { const d = new Date(); S.ui.calY = d.getFullYear(); S.ui.calM = d.getMonth(); touch(); render(); },
+  buy: (el, id) => openBuy(id),
+  'buy-confirm': (el, id) => confirmBuy(id),
+  postpone: (el, id) => openPostpone(id),
+  'postpone-do': (el, id) => doPostpone(id, Number(el.dataset.days)),
+  abandon: (el, id) => doAbandon(id),
+  restore: (el, id) => doRestore(id),
+  del: (el, id) => doDelete(id),
+  'modal-close': () => closeModal(),
+  'draft-save': () => saveDraft(),
+  'newcat-add': () => addNewCatInModal(),
+  'f-status': el => { F.status = el.dataset.v; renderList(); },
+  lock: () => lockApp(),
+  'load-sample': () => loadSample(),
+  'cat-add': () => addCat(), 'cat-del': (el, id) => delCat(id), 'cat-restore': () => restoreCats(),
+  'prio-add': () => addPrio(), 'prio-del': (el, id) => delPrio(id),
+  'prio-up': (el, id) => movePrio(id, -1), 'prio-down': (el, id) => movePrio(id, 1),
+  'fest-add': () => addFest(), 'fest-del': (el, id) => delFest(id),
+  accent: el => { S.settings.accent = el.dataset.v; touch(); render(); },
+  'export-enc': () => exportEnc(), 'export-plain': () => exportPlain(),
+  'import-json': () => $('#file-json').click(), 'import-csv': () => $('#file-csv').click(),
+  'wipe-items': () => wipeItems(), 'reset-all': () => resetAll(), 'change-pw': () => changePw(),
+  'dlg-ok': () => dlgOk(), 'dlg-cancel': () => closeModal(),
+};
+const NEEDS_NO_SESSION = new Set(['reset-all','dlg-ok','dlg-cancel','modal-close']);
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el || el.disabled) return;
+  const fn = A[el.dataset.act]; if (!fn) return;
+  if (!S && !NEEDS_NO_SESSION.has(el.dataset.act)) return;
+  e.preventDefault();
+  fn(el, el.dataset.id, e);
+});
+document.addEventListener('mousedown', e => {
+  if (e.target.matches?.('[data-overlay]') && modalKind && modalKind !== 'item' && modalKind !== 'buy') closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && modalKind && modalKind !== 'item') closeModal();
+  if (e.key === 'Enter' && e.target.id === 'cat-new') { e.preventDefault(); addCat(); }
+  if (e.key === 'Enter' && e.target.id === 'prio-new') { e.preventDefault(); addPrio(); }
+  if (e.key === 'Enter' && e.target.id === 'newcat-name') { e.preventDefault(); addNewCatInModal(); }
+});
+document.addEventListener('submit', e => {
+  if (e.target.id === 'dlg-form') { e.preventDefault(); dlgOk(); }
+});
+document.addEventListener('input', e => {
+  const el = e.target; if (!S) return;
+  const ds = el.dataset;
+  if (ds.draft !== undefined && S.draft) {
+    if (ds.draft === 'categoryId' && el.value === '__new') { $('#newcat').hidden = false; $('#newcat-name').focus(); return; }
+    if (ds.draft === 'categoryId') $('#newcat').hidden = true;
+    S.draft.data[ds.draft] = el.value; touch();
+    if (ds.draft === 'amount' || ds.draft === 'startDate') updateTierPreview();
+  } else if (ds.reflect !== undefined && S.draft) {
+    const q = tierOf(S.draft.data.amount).questions[Number(ds.reflect)];
+    S.draft.data.reflections = { ...(S.draft.data.reflections || {}), [q]: el.value }; touch();
+  } else if (ds.buyq !== undefined) {
+    const it = getItem(ds.id); if (!it) return;
+    const q = tierOf(it.amount).questions[Number(ds.buyq)];
+    it.reflections = { ...(it.reflections || {}), [q]: el.value }; touch();
+    $('#buy-err') && ($('#buy-err').textContent = '');
+  } else if (ds.bind) {
+    S.settings[ds.bind] = (el.type === 'number' || ds.num) ? (Number(el.value) || 0) : el.value; touch();
+    if (S.ui.tab === 'gantt') debounceDyn();
+  } else if (ds.rename) {
+    const list = { cat:S.categories, prio:S.priorities, fest:S.festivals }[ds.rename];
+    const o = list?.find(x => x.id === ds.id); if (!o) return;
+    const f = ds.field || 'name';
+    if (f === 'name') { const v = el.value.trim(); if (!v) return; o.name = v; }
+    else { const n = parseInt(el.value, 10); if (f === 'm' && n >= 1 && n <= 12) o.m = n; if (f === 'd' && n >= 1 && n <= 31) o.d = n; }
+    touch();
+  } else if (ds.filter) {
+    F[ds.filter] = el.value; renderGrid();
+  }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if ((t.id === 'file-json' || t.id === 'file-csv') && t.files?.[0] && S) {
+    const f = t.files[0]; t.value = '';
+    (t.id === 'file-json' ? importJSON : importCSV)(f);
+  }
+});
+
+/* =====================================================================
+ * 11. 啟動
+ * ===================================================================== */
+showLock();
+})();
+</script>
+</body>
+</html>
